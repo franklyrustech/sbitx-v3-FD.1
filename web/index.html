@@ -1753,6 +1753,12 @@ function FT8_cq(event){
 function FT8_cq_message_chosen(event){
 	var row = event.currentTarget;
 	$(row).addClass('highlightedItem');
+	var cqInfo = $(row).find('span.ft8-message').html();
+
+	$('#wsjtx-cq-activity ol').find('li span.ft8-message').filter(':contains("'+cqInfo+'")').each( function() {
+		$(this).closest('li').addClass('highlightedItem');
+	});
+
 	FT8_message_chosen(event);
 }
 
