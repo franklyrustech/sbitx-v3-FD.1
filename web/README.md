@@ -5,3 +5,6 @@ I take no responsibility to your actions.  Please be sure you know what you're d
 As of 5/30/2024, you can simply replace the /web folder with my cleaned out version and you should be good.
 Also be sure to edit the my-license.ini file and set your license class to the proper class. (Ie: Tech, General, Extra, Advanced)
 
+73,
+Frank Durante
+KE2AMY
