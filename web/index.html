@@ -11,7 +11,7 @@
 	2.1 The audio samples are enabled only for remote login. We do this by detecting if
 	the sbitx url is localhost or not.
 	2.2 All commands are implemented as fields of UI in sbitx. Read the C source to 
-	understand those.
+	understand those.s
 
 	SEMANTIC STRUCTURE		
   
@@ -27,19 +27,76 @@
 	CREDITS:
 	The wonderful knob is from https://github.com/aterrien/jQuery-Knob
 -->
-	<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>sBitx</title>
-    <script src="jquery.min.js"></script>
-    <script src="jquery.knob.min.js"></script>
-    <script src="pcm-player.js"></script> 
-		<link rel="stylesheet" href="style.css">
-  </head>
-  <body>
+<!--
+	New features developed by Frank Durante (KE2AMY) on May 24, 2024
+		- All new UI based off off Bootstrap for a responsive friendly interface.
+		
+		- Touch driven frequency chage.  Simply click on the area of the spectrum/waterfall of interest.
+
+		- Colorized frequency display displays what part of the band you are currently in, based on your class license.
+		  This is only configured for the United states at the moment.
+		  
+		- Button touch area of each button is improved to listen to the entire button area, not just the input box area.
+
+		- Power output button differenciated to stand out for immediate access.
+
+		- On-off buttons changed to led simulated buttons that illuminate when turned on.
+
+		- All buttons with multiple options, originally as a drop down, changed to quick access modal.
+
+		- The third row of buttons between vfo knob and waterfall display, are specifc to the activated operation mode.
+
+		- Function key Macros will appear only when needed
+
+		- Transmit/Receive buttons are now big and prominent in Phone mode for Upper and Lower sideband.
+
+		- Moved settings and miscellaneos tools into the top left as a standardly accepted gear icon.
+		  In it, there is are two section controlled by a tab enviroment.
+		  
+		- Logger is finessed to fit under the waterfall at all times.
+
+		- On screen keyboard set to cover spectrum and waterfall when the keyboard is needed as the waterfall and spectrum 
+		  is likely not needed during that time.
+
+		- Band button us enhanced to include FT8 shortcuts that change the band, jumps to the FT8 frequency, and sets the mode to FT8, all in one button.
+
+		- FT8 activity windows lacked the completion of notification colors.  This has been corrected in the javascript and CSS files.
+
+		- Telnet and console appear at the bottom, past the viewport gutter so the page will automatically scroll down to the new window
+		   and activate the keyboard to.
+	End of new features developed by Frank Durante (KE2AMY) on May 24, 2024
+-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>sBitx</title>
+
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/jquery.knob.min.js"></script>
+	<script src="/js/pcm-player.js"></script>
+	<script src="/library/bootstrap/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/library/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/bootstrap-sbitx.css">
+	<link rel="stylesheet" href="/library/draggable-window/draggable-window.css">
+
+</head>
+<body>
 	<input type="hidden" id="FREQ" value="7040000"/>
 	<input type="hidden" id="VFOA" value="7040000"/>
 	<input type="hidden" id="VFOB" value="7040000"/>
+	<input type="hidden" id="MODE" value="USB"/>
+	<input type="hidden" id="AGC" value="OFF"/>
+	<input type="hidden" id="STEP" value="100H"/>
+	<input type="hidden" id="SPLIT" value="OFF"/>
+	<input type="hidden" id="FT8_AUTO" value="OFF"/>
+	<input type="hidden" id="FT8_TX1ST" value="OFF"/>
+	<input type="hidden" id="CW_INPUT" value="STRAIGHT"/>
+	<input type="hidden" id="SPAN" value="25K"/>
+	<input type="hidden" id="MACRO" value="CW"/>
+	<input type="hidden" id="RIT" value="OFF"/>
 	<input type="hidden" id="POWER" value="0"/>
 	<input type="hidden" id="REF" value="1"/>
 	<input type="hidden" id="HIGH" value="2200"/>
@@ -48,400 +105,670 @@
 	<input type="hidden" id="REC" value="OFF" /> 
 	<input type="hidden" id="RIT_DELTA" name="RIT_DELTA" value="" /> 
 	<input type="hidden" id="VFO" value="A" />
-  <div id="sdr_page">
-	<div id="maincontrols">
-		<div class="sbitxv3-control">
-			<div class="sbitxv3-label">MODE</div>
-			<select class="sbitxv3-selection sbitx-selection" id="MODE">
-				<option value="USB">USB</option>
-				<option value="LSB">LSB</option>
-				<option value="CW">CW</option>
-				<option value="CWR">CWR</option>
-				<option value="FT8">FT8</option>
-				<option value="PSK31">PSK31</option>
-				<option value="RTTY">RTTY</option>
-				<option value="DIGITAL">DIGITAL</option> 
-				<option value="2TONE">2TONE</option>
-			</select>
-		</div><div class="sbitxv3-control" id="dial">
-    	<span id="current_freq">A:00.000.000</span> 
-			<span id="other_freq">B: 00.000.000</span>
-		</div><!-- funny html that breaks the line inside the button tag to 
-		prevent spaces between the elements 
-		--><button class="sbitxv3-btn" id="80M" type="submit">80M</button
-			><button class="sbitxv3-btn" id="40M" type="submit">40M</button
-			><button class="sbitxv3-btn" id="30M" type="submit">30M</button
-			><button class="sbitxv3-btn" id="20M" type="submit">20M</button
-			><button class="sbitxv3-btn" id="17M" type="submit">17M</button
-			><button class="sbitxv3-btn" id="15M" type="submit">15M</button
-			><button class="sbitxv3-btn" id="12M" type="submit">12M</button
-			><button class="sbitxv3-btn" id="10M" type="submit">10M</button
-		><div class="sbitxv3-control rx-control">
-			<div class="sbitxv3-label">AGC </div>
-			<select class="sbitxv3-selection sbitx-selection" id="AGC">
-				<option value="FAST">FAST</option>
-				<option value="MED">MED</option>
-				<option value="SLOW">SLOW</option>
-				<option value="OFF">OFF</option>
-			</select>
-		</div><div class="linear rx-control" id="linear_BW">
-    	<div class="linear-label">BW</div>
-    	<input type="number" id="BW" min="0" max="100" class="linear-value" />
-     	<div class="linear-dropdown">
-      	<input type="range" class="linear-slider"
-        	id="slider_BW" max="5000" min="50" step="50" value="13" />
-			</div>
-		</div><div class="linear rx-control" id="linear_IF">
-    	<div class="linear-label">IF</div>
-    	<input type="number" id="IF" min="0" max="100" class="linear-value" />
-     	<div class="linear-dropdown">
-      	<input type="range" class="linear-slider"
-        	id="slider_IF" max="100" min="0" step="1" value="13" />
-			</div>
-    </div><div class="linear rx-control" id="linear_AUDIO">
-    	<div class="linear-label">AUDIO</div>
-    	<input type="number" id="AUDIO" min="0" max="100" class="linear-value" />
-     	<div class="linear-dropdown">
-      	<input type="range" class="linear-slider"
-        	id="slider_AUDIO" max="100" min="0" step="1" value="13" />
-			</div>
-    </div><br/>
-		<div class="linear" id="linear_DRIVE">
-    	<div class="linear-label">DRIVE</div>
-    	<input type="number" id="DRIVE" min="1" max="100" class="linear-value" />
-     	<div class="linear-dropdown">
-      	<input type="range" class="linear-slider"
-        	id="slider_DRIVE" max="100" min="1" step="1" value="13" />
-			</div>
-		</div><div class="sbitxv3-control">	
-			<div class="sbitxv3-label">STEP</div>
-			<select id="STEP" class="sbitx-selection sbitxv3-selection">
-				<option value="10H">10H</option>
-				<option value="100H">100H</option>
-				<option value="1K">1K</option>
-				<option value="10K">10K</option>
-				<option value="100K">100K</option>
-			</select>
-		</div><div class="sbitxv3-control">
-			<div class="sbitxv3-label">VFO</div>
-			<select class="sbitxv3-selection sbitx-selection" id="VFO">
-				<option value="A">A</option>
-				<option value="B">B</option>
-			</select>
-		</div><div class="sbitxv3-control">
-			<div class="sbitxv3-label">SPLIT</div>
-			<select class="sbitxv3-selection sbitx-selection" id="SPLIT">
-				<option value="OFF">OFF</option>
-				<option value="ON">ON</option>
-			</select>
-		</div><div class="sbitxv3-control">
-			<div class="sbitxv3-label">RIT</div>
-			<select class="sbitxv3-selection sbitx-selection" id="RIT">
-				<option value="OFF">OFF</option>
-				<option value="ON">ON</option>
-			</select>
-		</div><button class="sbitxv3-btn" id="qrz" tabindex=-1>?</button
-		><input type="text" class="logger-input sbitx-text-input sbitx-text-field" 
-			id="CALL" placeholder="Call" size="6" 
-		><input type="text" class="logger-input sbitx-text-input sbitx-text-field" 
-			id="SENT" placeholder="Sent" size="3" 
-		/><input type="text" class="logger-input sbitx-text-input sbitx-text-field" 
-			id="RECV" placeholder="Rcv" size="3" 
-		/><input type="text" class="logger-input sbitx-text-input sbitx-text-field" 
-			id="EXCH" placeholder="Exch" size="2" 
-		/><input type="text" class="logger-input sbitx-text-input sbitx-text-field" 
-			id="NR" placeholder="Nr" size="2" 
-		/><button class="sbitxv3-btn" id="logger-log">OK</button
-		><button class="sbitxv3-btn" id="wipe">WIPE</button
-		><button class="sbitxv3-btn" id="logbook-open">SAVE</button
-		><div class="sbitxv3-control">
-			<div class="sbitxv3-label">SPAN</div>
-			<select class="sbitxv3-selection sbitx-selection" id="SPAN">
-				<option value="25K">25K</option>
-				<option value="10K">10K</option>
-				<option value="6K">6K</option>
-				<option value="2.5K">2.5K</option>
-			</select>
-		</div>
-	</div><!-- end of maincontrols -->
-		<span id="restore-btn" onclick="toggle_fullscreen();"> &#X21F3; </span>
-	<div id="sidebar"> 
-		<div class="menu-item" id="tuning_knob">
-			<input id="big_tuning_knob"
-				class="knob" data-width="190" 
-				data-height="190" data-displayInput=false 
-				data-cursor=true data-fgColor="#222222" data-thickness=.3 
-				data-step=1 data-max=360 value="0">
-		</div>
-		</div> <!-- end of sidebar -->	
-		<div id="main">
-<!-- settings panel -->
-	<div id="settings_panel" class="sbitx-panel">
-		<span class="sbitx-panel-title">
-			<button class="sbitx-btn-back" data-for="panel_bar">&#x2716; Close</button>  
-		</span>
-
-		<div class="settings-element">
-			<span class="settings-label">Passkey:</span><input id="PASSKEY" 
-					class="settings_input sbitx-text-input" type="text" size="6" />
-		</div>
-
-		<div class="settings-element">
-			<span class="settings-label">My Callsign:</span><input id="MYCALLSIGN" 
-					class="settings_input sbitx-text-input" type="text" size="6" />
-		</div>
-
-		<div class="settings-element">
-			<span class="settings-label">My Grid:</span><input id="MYGRID" 
-					class="settings_input sbitx-text-input" type="text" size="6" />
-		</div>
-		<div class="settings-element">
-			<span class="settings-label">Telnet Server:</span> 
-			<input type="text" class="settings_input sbitx-text-input" size="17"
-				id="TELNETURL" />
-			(Like : dxc.nc7j.com:7373)
-		</div>
-		<div class="settings-element">
-			<span class="settings-label"></span>
-			<button id="settings_save" class="logger-button">Update</button>		
-		</div>
-	</div><!-- end of help text -->
-  		<div id="login_panel">
-				<div class="help_text">
-				<h1>sBitx v3</h1>
-					<p>The sBitx is an open-source, hackable, next generation radio.</p>
- 			 			<p>Enter passkey to access your sbitx.</p> 
-						<div id="login_error"></div>
-  					<input type="text" class="sbitx-text-input" id="passkey" 
-						name="passkey" autocomplete="off" placeholder="passkey"/>
-  					<button class="logger-button" id="start_login" >Start</button>
-					<p>New user? Try 123 as the passkey. Change it when prompted.</p>	
-					<p>Released under General Public Licens v3.0.<br/>
-					(c) Ashhar Farhan, 2023
-					</p>
+	<input type="hidden" id="LICENSE" value="TECH" />
+	
+	<span id="restore-btn" onclick="toggle_fullscreen();"> &#X21F3; </span>
+	<span id="tools-btn" class="btnWhiteVal iconBtn" onclick="$('#toolsModal').modal('show');">&#9881;</span>
+	<span id="keyboard-btn" onclick="show_keyboard();"><img src="/img/keyboard.gif"></span>
+	
+	<div class="container-fluid" id="sdr_page">
+		 <div id="maincontrols">
+			<div class="row">
+<!-- VFO Knob -->
+				<div class="col-md-3" id="dial">
+					<div class="col-sm-12" id="tuning_knob">
+						<input id="big_tuning_knob"
+							class="knob" data-width="130" 
+							data-height="130" data-displayInput=false 
+							data-cursor=true data-fgColor="#222222" data-thickness=.3 
+							data-step=1 data-max=360 value="0">
+					</div>
+<!-- VFO Knob ends -->
 				</div>
-  		</div><!-- end of login -->
-			<!-- it streams automatically, anyway 
-			<div id="extra-controls">
-				<button id="streamaudio" type="submit" onclick="audio_start();">Stream Audio</button> 
+				<div class="col-md-3" id="settingsGroup">
+<!-- A/B Frequency display -->
+					<div class="row">
+						<div class="col-sm-12" id="vfoValues" onclick="vfo_swap();">
+							<span id="current_freq">A:00.000.000</span> 
+							<div class="clearIt"></div>
+							<span id="other_freq">B: 00.000.000</span>			
+						</div>
+					</div>
+<!-- A/B Frequency display ends -->
+					<div class="row">
+						<div class="col-sm-12">
+<!-- Middle set buttons 1st row -->
+							<div class="buttonType1 btnColorGrey" onclick="$('#modeSelectionModal').modal('show');">
+								<div class="buttonLabelRed">MODE<br>
+									<span class="btnWhiteVal" id="modeValue"></span>
+								</div>
+							</div>
+							
+							<div class="buttonType1 btnColorGrey" onclick="$('#agcSelectionModal').modal('show');">
+								<div class="buttonLabelRed">AGC<br>
+									<span class="btnWhiteVal" id="agcValue"></span>
+								</div>
+							</div>
+							
+							<div class="linear rx-control btnColorGrey" id="linear_BW">
+								<div class="buttonLabelRed">BW</div>
+								<input type="number" id="BW" min="0" max="100" class="linear-value" readonly />
+								<div class="linear-dropdown">
+									<input type="range" class="linear-slider" id="slider_BW" max="5000" min="50" step="50" value="13" />
+								</div>
+							</div>
+							
+							<div class="buttonType1 btnColorGrey" onclick="$('#bandSelect').modal('show');">
+								<div class="buttonLabelRed">BAND<br>----</div>
+							</div>
+							
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+<!-- Middle set buttons 2nd row -->
+							<div class="buttonType1 btnColorGrey" onclick="$('#spanSelectionModal').modal('show');">
+								<div class="buttonLabelRed">SPAN<br>
+									<span class="btnWhiteVal" id="spanValue"></span>
+								</div>
+							</div>
+							
+							<div class="linear rx-control btnColorGrey" id="linear_IF">
+								<div class="buttonLabelRed">IF</div>
+								<input type="number" id="IF" min="0" max="100" class="linear-value" readonly />
+								<div class="linear-dropdown">
+									<input type="range" class="linear-slider" id="slider_IF" max="100" min="0" step="1" value="13" />
+								</div>
+							</div>
+							
+							<div class="linear btnColorMstrd" id="linear_DRIVE">
+								<div class="buttonLabelRed">PWR</div>
+								<input type="number" id="DRIVE" min="1" max="100" class="linear-value" readonly />
+								<div class="linear-dropdown">
+									<input type="range" class="linear-slider" id="slider_DRIVE" max="100" min="1" step="1" value="13" />
+								</div>
+							</div>
+							
+							<div class="linear rx-control btnColorGrey" id="linear_AUDIO">
+								<div class="buttonLabelRed">SPKR</div>
+								<input type="number" id="AUDIO" min="0" max="100" class="linear-value" readonly />
+								<div class="linear-dropdown">
+									<input type="range" class="linear-slider" id="slider_AUDIO" max="100" min="0" step="1" value="13" />
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="row">
+						
+						<div id="spectrum-wrap" class="col-sm-12">
+<!-- Transmission meter starts -->
+							<div id="tx_meters">
+								<div class="menu-item">
+									<span class="slider-label">Watts</span>
+									<meter id="POWER_meter" max="500" min="0" value="0"></meter>
+									<span id="POWER_reading"></span> 
+								</div>
+								<div class="menu-item">
+									<span class="slider-label">SWR</span> 
+									<meter id="REF_meter" max="1000" min="0" value="0"></meter>
+									<span id="REF_reading"/></span>
+								</div>
+							</div>
+<!-- Transmission meter ends -->
+<!-- pan adapter and waterfall -->
+							<div class="row">
+								<div class="col-sm-12">
+									<canvas id="spectrum" width="300" height ="100"></canvas>
+								</div>
+								<div class="col-sm-12">
+									<canvas id="waterfall" width="300" height="100"></canvas>
+								</div>
+							</div>					
+						</div>
+						
+					</div>
+				</div>
 			</div>
-			-->
-	<!-- logbook -->
-	<div id="logbook_panel" class="sbitx-panel">
+
+			<div class="row">
+				<div class="col-md-3">
+<!-- Buttons under VFO Knob -->
+					<div class="buttonType1 btnColorGrey" onclick="$('#vfoDialStepModal').modal('show');">
+						<div class="buttonLabelRed">STEP<br>
+							<span class="btnWhiteVal" id="stepValue"></span>
+						</div>
+					</div>
+
+					<div class="buttonType1 btnColorGrey" onclick="toggleBtn('splitLED','SPLIT');">
+						<div class="buttonLabelRed">SPLIT</div>
+						<div id="splitLED" class="btnLED ledOff"></div>
+					</div>
+
+					<div class="buttonType1 btnColorGrey" onclick="toggleBtn('ritLED','RIT');">
+						<div class="buttonLabelRed">RIT</div>
+						<div id="ritLED" class="btnLED ledOff"></div>
+					</div>
+					
+					<div class="linear btnColorGrey" id="linear_MIC">
+						<div class="buttonLabelRed">MIC</div>
+						<input type="number" id="MIC" min="0" max="100" class="linear-value" readonly />
+						<div class="linear-dropdown">
+							<input type="range" class="linear-slider" id="slider_MIC" max="100" min="0" step="1" value="13" />
+						</div>
+					</div>
+
+				</div>
+<!-- Middle set buttons 3rd row (Mode specific) starts here-->
+				<div class="col-md-3">
+<!-- FT8 Mode Buttons -->
+					<div id="FT8_controls">
+						
+						<div class="buttonType1 btnColorGrey" onclick="toggleBtn('autoLED','FT8_AUTO');">
+							<div class="buttonLabelRed smaller">FT8<br>AUTO</div>
+							<div id="autoLED" class="btnLED ledOff"></div>
+						</div>
+
+						<div class="buttonType1 btnColorGrey" onclick="toggleBtn('tx1stLED','FT8_TX1ST');">
+							<div class="buttonLabelRed smaller">FT8<br>TX1ST</div>
+							<div id="tx1stLED" class="btnLED ledOff"></div>
+						</div>
+					
+						<div class="linear buttonType1 btnColorGrey" id="linear_TX_PITCH">
+							<div class="buttonLabelRed smaller">FT8<br>TONE</div>
+							<input type="number" id="TX_PITCH" min="10" max="4000" class="linear-value" readonly />
+							<div class="linear-dropdown">
+								<input type="range" class="linear-slider" id="slider_TX_PITCH" max="4000" min="10" step="10" value="1900" />
+							</div>
+						</div>
+						
+						<div class="linear buttonType1 btnColorGrey" id="linear_FT8_REPEAT">
+							<div class="buttonLabelRed smaller">FT8<br>RETRY</div>
+							<input type="number" id="FT8_REPEAT" min="1" max="10" class="linear-value" readonly />
+							<div class="linear-dropdown">
+								<input type="range" class="linear-slider" id="slider_FT8_REPEAT" max="10" min="1" step="1" value="3" />
+							</div>
+						</div>						
+					</div>
+<!-- FT8 Mode Buttons Ends -->
+<!-- CW Mode Buttons -->
+					<div id="cw_settings">
+						<div class="linear buttonType1 btnColorGrey" id="linear_WPM">
+							<div class="buttonLabelRed smaller">CW<br>WPM</div>
+							<input type="number" id="WPM" min="0" max="100" class="linear-value" readonly />
+							<div class="linear-dropdown">
+								<input type="range" class="linear-slider" id="slider_WPM" max="40" min="5" step="1" value="13" />
+							</div>
+						</div>
+						<div class="linear buttonType1 btnColorGrey" id="linear_PITCH">
+							<div class="buttonLabelRed smaller">CW<br>PITCH</div>
+							<input type="number" id="PITCH" min="0" max="100" class="linear-value" readonly />
+							<div class="linear-dropdown">
+								<input type="range" class="linear-slider" id="slider_PITCH" max="3000" min="50" step="10" value="600" />
+							</div>
+						</div>
+						<div class="linear buttonType1 btnColorGrey" id="linear_CW_DELAY">
+							<div class="buttonLabelRed smaller">CW<br>DELAY</div>
+							<input type="number" id="CW_DELAY" min="50" max="1000" class="linear-value" readonly />
+							<div class="linear-dropdown">
+								<input type="range" class="linear-slider" id="slider_PITCH" max="1000" min="50" step="50" value="600" />
+							</div>
+						</div>
+						<div class="buttonType1 btnColorGrey" onclick="$('#cwInputSelectionModal').modal('show');">
+							<div class="buttonLabelRed smaller">CW<br>INPUT<br>
+								<span class="btnWhiteVal" id="cwInputValue"></span>
+							</div>
+						</div>
+					</div>
+<!-- CW Mode Buttons ends -->
+<!-- SSB Mode Buttons start -->
+					<div id="recorder" class="menu_item">
+						<button class="buttonType1 btnColorRed" id="record_start">REC</button>
+						<button class="buttonType1 btnColorWht" id="record_stop">STOP</button>
+						<span id="record_duration">00:00</span>
+					</div>
+<!-- SSB Mode Buttons end -->					
+				</div>
+<!-- Middle set buttons 3rd row (Mode specific) ends here-->
+
+<!-- Logger section just under waterfall starts -->
+				<div class="col-md-6">	
+					<div id="loggerInputs">
+						<div class="floaters">
+							<input type="text" class="logger-input sbitx-text-input sbitx-text-field doubleheight" id="CALL" placeholder="Call" size="6" />
+						</div>
+						<div class="floaters">
+							<input type="text" class="logger-input sbitx-text-input sbitx-text-field" id="SENT" placeholder="Sent" size="3" />
+		
+							<div class="clearIt"></div>
+							<input type="text" class="logger-input sbitx-text-input sbitx-text-field" id="RECV" placeholder="Rcv" size="3" />
+						</div>
+						<div class="floaters">
+							<input type="text" class="logger-input sbitx-text-input sbitx-text-field" id="EXCH" placeholder="Exch" size="2" />
+							<div class="clearIt"></div>
+							<input type="text" class="logger-input sbitx-text-input sbitx-text-field" id="NR" placeholder="Nr" size="2" />
+						</div>
+						<div class="floaters marginLeft5">
+							<button class="logBtns btnColorGreen" id="logger-log">OK</button>
+							<button class="logBtns btnColorGreen" id="wipe">WIPE</button>
+							<button class="logBtns btnColorGreen" id="logbook-open">SAVE</button>
+							<div class="logBtns btnColorGreen" id="qrz">QRZ<br>Lookup</div>
+						</div>
+					</div>
+
+				</div>
+<!-- Logger section just under waterfall ends -->
+			</div>
+				
+		</div>
+
+
+		<div id="main">
+			<div class="row">
+				
+				<div class="col-sm-12">
+<!-- Middle of page: Text\CMD, macro set, Function keys. starts here -->
+					<div class="linear rx-control btnColorGrey floaters" id="linear_SIDETONE">
+						<div class="buttonLabelRed">TX VOL</div>
+						<input type="number" id="SIDETONE" min="0" max="100" class="linear-value" readonly />
+						<div class="linear-dropdown">
+							<input type="range" class="linear-slider" id="slider_SIDETONE" max="100" min="0" step="5" value="600" />
+						</div>
+					</div>
+					<input type="text" class="sbitx-text-input sbitx-text-field marginLeft5" id="TEXT" placeholder="TEXT\CMD" size="20" />
+					<div id="keybd-container">
+						<div id="macroBtn" class="Sbitxv3-control buttonType1 btnColorWht" onclick="$('#macroModal').modal('show');">
+							<div class="buttonLabelRed">MACRO<br>
+								<span class="macroSelectLabel" id="macroValue"></span>
+							</div>
+						</div>
+						<div id="more_keys">								
+							<button class="logBtns btnColorGrey" id="esc">ESC</button>
+							<button class="buttonType1 btnColorWht" id="F1">F1</button>
+							<button class="buttonType1 btnColorWht" id="F2">F2</button>
+							<button class="buttonType1 btnColorWht" id="F3">F3</button>
+							<button class="buttonType1 btnColorWht" id="F4">F4</button>
+							<button class="buttonType1 btnColorWht" id="F5">F5</button>
+							<button class="buttonType1 btnColorWht" id="F6">F6</button>
+							<button class="buttonType1 btnColorWht" id="F7">F7</button>
+							<button class="buttonType1 btnColorWht" id="F8">F8</button>
+							<button class="buttonType1 btnColorWht" id="F9">F9</button>
+							<button class="buttonType1 btnColorWht" id="F10">F10</button>
+						</div>
+					</div>
+<!-- Middle of page: Text\CMD, macro set, Function keys. ends here -->
+				</div>
+				
+				<div class="col-sm-12" id="FT8_Activity_Rows">
+<!-- FT8 Activity and RX info starts -->
+					<div class="row marginTop5">
+						<div class="col-sm-4">
+							<div class="borderedBox activityBox sbitx-panel mode-panel" id="FT8_ui_CQ">
+								<span class="sbitxv3-label"><u>CQ Calls</u></span>
+								<div class="clearIt"></div>
+								<div id="wsjtx-cq-activity" class="sbitx-list-container" onchange="$(this).animate({ scrollTop: $(this)[0].scrollHeight }, 'slow');">
+									<ol size="10" class="sbitx-list-box">
+									</ol>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-4">
+							<div class="borderedBox activityBox sbitx-panel mode-panel" id="FT8_ui">
+								<span class="sbitxv3-label"><u>Band Activity</u></span>
+								<div class="clearIt"></div>
+								<div id="wsjtx-activity" class="sbitx-list-container" onchange="$(this).animate({ scrollTop: $(this)[0].scrollHeight }, 'slow');">
+									<ol size="10" class="sbitx-list-box">
+									</ol>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-4">
+							<div class="borderedBox activityBox sbitx-panel mode-panel" id="FT8_ui_RX">
+								<span class="sbitxv3-label"><u>RX Frequency</u></span>
+								<div class="clearIt"></div>
+								<div id="wsjtx-rx" class="sbitx-list-container" onchange="$(this).animate({ scrollTop: $(this)[0].scrollHeight }, 'slow');">
+									<ol size="10" class="sbitx-list-box">
+									</ol>
+								</div>
+							</div>						
+						</div>
+<!-- FT8 Activity and RX info starts -->
+					</div>
+				</div>
+				
+				<div class="col-sm-12">
+<!-- CW terminal starts -->								
+					<div id="CW_ui" class="sbitx-panel mode-panel">
+						<div id="data_window" tabindex="0">
+							<span id="text_done"></span>
+							<span id="text_pending"></span>
+						</div>
+					</div>
+<!-- CW terminal ends -->
+				</div>
+				
+				<div class="col-sm-12">
+<!-- ssb/2tone TX/RX starts -->
+					<div id="Voice_ui" class="sbitx-panel mode-panel floaters">
+						<div id="ptt_tx" class="btnColorGreen">TX</div>
+						<div id="ptt_rx" class="btnColorYlw">RX</div>
+					</div>
+<!-- ssb/2tone TX/RX ends -->
+				</div>
+				
+				<div class="col-sm-12">
+<!-- console panel -->
+					<div id ="console_panel" class="col-sm-12 sbitx-panel">
+						Terminal	
+						<span class="sbitx-panel-title">
+							<button class="sbitx-btn-back" data-for="panel_bar">&#x2716; Close</button>  
+						</span>
+						<div id="console_window">
+						</div>
+						<div id="command_bar">
+							<input type="text" class="sbitx-text-input"  id="text_in" />
+						</div>
+					</div>
+				</div>
+<!-- console panel ends -->
+				
+				<div class="col-sm-12">
+<!-- telnet panel -->
+					<div id ="telnet_panel" class="col-sm-12 sbitx-panel">
+						<span class="sbitx-panel-title">
+							<button class="sbitx-btn-back" data-for="panel_bar">&#x2716; Close</button>  
+						</span>
+						Telnet 
+							<button id="telnet" class="logger-button sbitx-btn">Start</button>	 
+							<button id="tclose" class="logger-button sbitx-btn">Stop</button> 
+						<div id="telnet_window">
+						</div>
+						<div id="telnet_command_bar">
+							<input type="text" class="sbitx-text-input"  id="telnet_in" />
+						</div>
+					</div>
+				</div>
+<!-- telnet panel ends-->
+			</div>
+
+		</div>
+
+	</div>
+	
+	
+<!-- Login panel -->
+	<div class="row" id="login_panel">
+		<div class="col-sm-12">
+			<div class="help_text">
+			<h1>sBitx v3-FD.1</h1>
+				<p>The sBitx is an open-source, hackable, next generation radio.</p>
+					<p>Enter passkey to access your sbitx.</p> 
+					<div id="login_error"></div>
+				<input type="password" class="sbitx-text-input" id="passkey" 
+					name="passkey" autocomplete="off" placeholder="passkey"/>
+				<button class="logger-button" id="start_login" >Start</button>
+				<p>New user? Try 123 as the passkey. Change it when prompted.</p>	
+				<p>Released under General Public Licens v3.0.<br/>
+				(c) Ashhar Farhan, 2024
+				</p>
+			</div>
+		</div>
+	</div>
+<!-- Login panel ends -->
+	
+	
+
+	
+<!-- logbook -->
+	<div id="logbook_panel" class="sbitx-panel row">
+		<div class="col-sm-12">
 			<input class="logger-input sbitx-text-input sbitx-text-field"
 				id="logbook-search" type="text" size="6" placeholder="Search"/>
 			<button class="sbitxv3-btn longer-control" id="btn-logbook-load">More</button> 
 			<button class="sbitxv3-btn longer-control" id="btn-logbook-close">Close</button> 
-		<table id="logbook_table">
-			<thead><tr>
-				<th class="logbook-serial">#</th>
-				<th class="logbook-datestamp">Date-Time</th>
-				<th class="logbook-freq">Freq</th>
-				<th class="logbook-mode">Mode</th>
-				<th class="logbook-call">Call</th>
-				<th class="logbook-sent">Sent</th>
-				<th class="logbook-recv">Recv</th>
-			</tr></thead>
-			<tbody>
-			</tbody>
-		</table>
-	</div>
-<!--   panadapter, xxxx_open functions will resize this as needed -->
-<!-- pan adapter and waterfall -->
-		<div id="pan_adapter">
-			<div id="console">Hello</div>
-			<div id="tx_meters">
-				<div class="menu-item">
-					<span class="slider-label">Watts</span>
-					<meter id="POWER_meter" max="500" min="0" value="0"></meter>
-					<span id="POWER_reading"></span> 
-				</div>
-				<div class="menu-item">
-					<span class="slider-label">SWR</span> 
-					<meter id="REF_meter" max="1000" min="0" value="0"></meter>
-					<span id="REF_reading"/></span>
-				</div>
-			</div><!-- end of tx_meters --> 
-<!-- recorder panel -->
-	<div id="recorder_panel" class="sbitx-panel mode-panel">
-			<span class="sbitx-panel-title">
-				<button class="sbitx-btn-back" data-for="panel_bar">&#x2716; Close</button>  
-			</span>
-			<div class="menu_item">
-				<button class="logger-button" id="record_start">REC</button>
-				<button class="logger-button" id="record_stop">STOP</button>
-				<span id="record_duration">00:00</span>
-			</div>
-	</div>	
-			<div id="spectrum-wrap">
-				<div width="100%"><canvas id="spectrum" width="600" height ="80"></canvas></div>
-			</div><!-- end of spectrum-wrap -->
-			<div width="100%"><canvas id="waterfall" width="600" height="80"></canvas></div>
-		</div>
-<!-- end of panadapter -->
-<!- wsjtx specific controls -->
-		<div id="FT8_ui" class="sbitx-panel mode-panel">
-			<div id="wsjtx-activity" class="sbitx-list-container" >
-				Band Activity
-				<ol size="10" class="sbitx-list-box">
-				</ol>
-			</div>
-			<div id="wsjtx-rx" class="sbitx-list-container" >
-				RX Frequency
-				<ol size="10" class="sbitx-list-box">
-				</ol>
-			</div>
-
-			<div id="FT8_controls">
-				<div class="sbitxv3-control">
-					<div class="sbitxv3-label">AUTO</div>
-					<select class="sbitxv3-selection sbitx-selection" id="FT8_AUTO">
-						<option value="ON">ON</option>
-						<option value="OFF">OFF</option>
-					</select>
-				</div>
-				<div class="sbitxv3-control">
-					<div class="sbitxv3-label">TX1ST</div>
-					<select class="sbitxv3-selection sbitx-selection" id="FT8_TX1ST">
-						<option value="ON">ON</option>
-						<option value="OFF">OFF</option>
-					</select>
-				</div><div class="linear" id="linear_TX_PITCH">
-    		<div class="linear-label">TX TONE</div>
-    			<input type="number" id="TX_PITCH" min="10" max="4000" class="linear-value" />
-     		<div class="linear-dropdown">
-      			<input type="range" class="linear-slider"
-        			id="slider_TX_PITCH" max="4000" min="10" step="10" value="1900" />
-					</div>
-				</div><div class="linear" id="linear_FT8_REPEAT">
-    			<div class="linear-label">REPEAT</div>
-    			<input type="number" id="FT8_REPEAT" min="1" max="10" class="linear-value" />
-     		<div class="linear-dropdown">
-      		<input type="range" class="linear-slider"
-        		id="slider_FT8_REPEAT" max="10" min="1" step="1" value="3" />
-				</div>
-			</div><!-- end of FT8_controls -->
+			<table id="logbook_table">
+				<thead><tr>
+					<th class="logbook-serial">#</th>
+					<th class="logbook-datestamp">Date-Time</th>
+					<th class="logbook-freq">Freq</th>
+					<th class="logbook-mode">Mode</th>
+					<th class="logbook-call">Call</th>
+					<th class="logbook-sent">Sent</th>
+					<th class="logbook-recv">Recv</th>
+				</tr></thead>
+				<tbody>
+				</tbody>
+			</table>
 		</div>
 	</div>
-<!- cw pane -->
-		<div id="CW_ui" class="sbitx-panel mode-panel">
-			<div id="data_window" tabindex="0">
-				<span id="text_done"></span>
-				<span id="text_pending"></span>
+
+
+<!-- Band selection Modal starts -->
+<div class="modal" id="bandSelect" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Select a Band</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<div id="cw_settings">
-				<div class="linear" id="linear_WPM">
-    			<div class="linear-label">WPM</div>
-    			<input type="number" id="WPM" min="0" max="100" class="linear-value" />
-     			<div class="linear-dropdown">
-      			<input type="range" class="linear-slider"
-        			id="slider_WPM" max="40" min="5" step="1" value="13" />
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="bands wideButtons">
+							<button class="bandBtns btn btnColorGrey buttonLabelRed btn-sm" id="80M" type="submit" onclick="$('.modal').modal('hide');">80</button>
+							<button class="bandBtns btn btnColorGrey buttonLabelRed btn-sm" id="40M" type="submit" onclick="$('.modal').modal('hide');">40</button>
+							<button class="bandBtns btn btnColorGrey buttonLabelRed btn-sm" id="30M" type="submit" onclick="$('.modal').modal('hide');">30</button>
+							<button class="bandBtns btn btnColorGrey buttonLabelRed btn-sm" id="20M" type="submit" onclick="$('.modal').modal('hide');">20</button>
+							<button class="bandBtns btn btnColorGrey buttonLabelRed btn-sm" id="17M" type="submit" onclick="$('.modal').modal('hide');">17</button>
+							<button class="bandBtns btn btnColorGrey buttonLabelRed btn-sm" id="15M" type="submit" onclick="$('.modal').modal('hide');">15</button>
+							<button class="bandBtns btn btnColorGrey buttonLabelRed btn-sm" id="12M" type="submit" onclick="$('.modal').modal('hide');">12</button>
+							<button class="bandBtns btn btnColorGrey buttonLabelRed btn-sm" id="10M" type="submit" onclick="$('.modal').modal('hide');">10</button>
+						</div>
 					</div>
-				</div><div class="linear" id="linear_PITCH">
-    			<div class="linear-label">PITCH</div>
-    			<input type="number" id="PITCH" min="0" max="100" class="linear-value" />
-     			<div class="linear-dropdown">
-      			<input type="range" class="linear-slider"
-        			id="slider_PITCH" max="3000" min="50" step="10" value="600" />
+					<div class="col-sm-12 marginTop40">
 					</div>
-				</div><div class="linear" id="linear_CW_DELAY">
-    			<div class="linear-label">DELAY</div>
-    			<input type="number" id="CW_DELAY" min="50" max="1000" class="linear-value" />
-     			<div class="linear-dropdown">
-      			<input type="range" class="linear-slider"
-        			id="slider_PITCH" max="1000" min="50" step="50" value="600" />
+					<div class="col-sm-12">
+						<h3>FT8 SHORTCUTS</h3>
 					</div>
-				</div><div class="linear" id="linear_SIDETONE">
-    			<div class="linear-label">TX VOL</div>
-    			<input type="number" id="SIDETONE" min="0" max="100" class="linear-value" />
-     			<div class="linear-dropdown">
-      			<input type="range" class="linear-slider"
-        			id="slider_SIDETONE" max="100" min="0" step="5" value="600" />
+					<div class="col-sm-12">
+						<div class="bands wideButtons">
+							<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_freq(3573000);update_mode('FT8');$('.modal').modal('hide');">80 <span class="whtText">(3.573 Mhz)</span></span>
+							<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_freq(7074000);update_mode('FT8');$('.modal').modal('hide');">40 <span class="whtText">(7.074 Mhz)</span></span>
+							<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_freq(10136000);update_mode('FT8');$('.modal').modal('hide');">30 <span class="whtText">(10.136 Mhz)</span></span>
+							<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_freq(14074000);update_mode('FT8');$('.modal').modal('hide');">20 <span class="whtText">(14.074 Mhz)</span></span>
+							<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_freq(18100000);update_mode('FT8');$('.modal').modal('hide');">17 <span class="whtText">(18.100 Mhz)</span></span>
+							<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_freq(21074000);update_mode('FT8');$('.modal').modal('hide');">15 <span class="whtText">(21.074 Mhz)</span></span>
+							<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_freq(24915000);update_mode('FT8');$('.modal').modal('hide');">12 <span class="whtText">(24.915 Mhz)</span></span>
+							<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_freq(28074000);update_mode('FT8');$('.modal').modal('hide');">10 <span class="whtText">(28.074 Mhz)</span></span>
+						</div>
 					</div>
-				</div><div class="sbitx-control longer-control">
-					<div class="sbitxv3-label">INPUT</div>
-						<select class="sbitxv3-selection sbitx-selection" id="CW_INPUT">
-							<option value="IAMBIC">IAMBIC</option>
-							<option value="IAMBICB">IAMBIC-B</option>
-							<option value="STRAIGHT">STRAIGHT</option>
-					</select>
 				</div>
 			</div>
-			<span id="data_chat">
-					<button  id="data_chat_tx">TX</button> 
-					<button id="data_chat_rx">RX</button> 
-			</span>
 		</div>
-<!-- ssb/2tone pane -->
-	<div id="Voice_ui" class="sbitx-panel mode-panel">
-    <div class="linear" id="linear_MIC">
-    	<div class="linear-label">MIC</div>
-    	<input type="number" id="MIC" min="0" max="100" class="linear-value" />
-     	<div class="linear-dropdown">
-      	<input type="range" class="linear-slider"
-        	id="slider_MIC" max="100" min="0" step="1" value="13" />
+	</div>
+</div>
+<!-- Band selection Modal ends -->
+	
+<!-- Extra Tools Modal starts -->
+<div class="modal fade" id="toolsModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Extra Tools</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-    </div>
-		<button id="ptt_tx">TX</button>
-		<button id="ptt_rx">RX</button>
-	</div>	
-<!-- console panel -->
-		<div id ="console_panel" class="sbitx-panel">
-			Terminal	
-			<span class="sbitx-panel-title">
-				<button class="sbitx-btn-back" data-for="panel_bar">&#x2716; Close</button>  
-			</span>
-			<div id="console_window">
-			</div>
-			<div id="command_bar">
-				<input type="text" class="sbitx-text-input"  id="text_in" />
-			</div>
-		</div>
+			<div class="modal-body">				
+				<ul class="nav nav-tabs" id="myTab" role="tablist">
+					<li class="nav-item" role="presentation">
+						<button class="nav-link active" id="tools-tab" data-bs-toggle="tab" data-bs-target="#tools-tab-pane" type="button" role="tab" aria-controls="tools-tab-pane" aria-selected="true">Tools</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings-tab-pane" type="button" role="tab" aria-controls="settings-tab-pane" aria-selected="false">Settings</button>
+					</li>
+				</ul>
+				<div class="tab-content" id="myTabContent">
+					<div class="tab-pane fade show active" id="tools-tab-pane" role="tabpanel" aria-labelledby="tools-tab" tabindex="0">
+						<span class="btn btn-primary" id="band-chart" onclick="window.open('ARRL-Band-Chart.html', '_blank').focus();">Band<br>Chart</span>
+						<span class="btn btn-primary" id="console-open" onclick="show_console_panel();$('.modal').modal('hide');">Command<br>Line</span>
+						<span class="btn btn-primary" id="telnet-open" onclick="show_telnet_panel();$('.modal').modal('hide');">Telnet<br>Panel</span>
+						<a href="https://www.hamqsl.com/solar.html" target="_blank" title="Click to add Solar-Terrestrial Data to your website!">
+							<img src="https://www.hamqsl.com/solarbc.php">
+						</a>
+					</div>
+					<div class="tab-pane fade" id="settings-tab-pane" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">
+						
+						<div class="settings-element">
+							<span class="settings-label">Passkey:</span>
+							<input id="PASSKEY" class="settings_input sbitx-text-input" type="text" size="6" />
+						</div>
 
-<!-- telnet panel -->
-		<div id ="telnet_panel" class="sbitx-panel">
-			<span class="sbitx-panel-title">
-				<button class="sbitx-btn-back" data-for="panel_bar">&#x2716; Close</button>  
-			</span>
-			Telnet 
-				<button id="telnet" class="logger-button sbitx-btn">Start</button>	 
-				<button id="tclose" class="logger-button sbitx-btn">Stop</button> 
-			<div id="telnet_window">
-			</div>
-			<div id="telnet_command_bar">
-				<input type="text" class="sbitx-text-input"  id="telnet_in" />
+						<div class="settings-element">
+							<span class="settings-label">My Callsign:</span>
+							<input id="MYCALLSIGN" class="settings_input sbitx-text-input" type="text" size="6" />
+						</div>
+
+						<div class="settings-element">
+							<span class="settings-label">My Grid:</span>
+							<input id="MYGRID" class="settings_input sbitx-text-input" type="text" size="6" />
+						</div>
+						
+						<div class="settings-element">
+							<span class="settings-label">Telnet Server:</span> 
+							<input type="text" class="settings_input sbitx-text-input" size="17" id="TELNETURL" /> <span class="fineprint">(Ie: dxc.nc7j.com:7373)</span>
+						</div>
+						<div class="settings-element">
+							<span class="settings-label"></span>
+							<button id="settings_save" class="logger-button">Update</button>		
+						</div>
+						
+					</div>
+				</div>
 			</div>
 		</div>
+	</div>
+</div>
+<!-- Extra Tools Modal ends -->
 
-
-	</div><!-- end of main used to limit overlapping of sidebar -->   
-<!-- the keyboard, comes at the bottom of them all -->
-</div> <!-- end of sdr_page (vs login page, etc)--> 
-	<div id="keybd-container">
-		<div id="more_keys">
-		<div class="Sbitxv3-control">
-			<div class="sbitxv3-label">MACRO</div>
-			<select class="sbitxv3-selection sbitx-selection" id="MACRO">
-			</select>
+<!-- Mode Modal starts -->
+<div class="modal modal-sm" id="modeSelectionModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<center>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_mode('USB');$('.modal').modal('hide');">USB</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_mode('LSB');$('.modal').modal('hide');">LSB</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_mode('CW');$('.modal').modal('hide');">CW</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_mode('CWR');$('.modal').modal('hide');">CWR</span>
+					<br>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_mode('DIGITAL');$('.modal').modal('hide');">DIGITAL</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_mode('PSK31');$('.modal').modal('hide');">PSK31</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_mode('2TONE');$('.modal').modal('hide');">2TONE</span>
+					<br>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_mode('FT8');$('.modal').modal('hide');">FT8</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_mode('RTTY');$('.modal').modal('hide');">RTTY</span>
+				</center>
+			</div>
 		</div>
-		<button class="sbitxv3-btn" id="esc">ESC</button
-		><button class="sbitxv3-btn macro-btn" id="F1">F1</button
-		><button class="sbitxv3-btn macro-btn" id="F2">F2</button
-		><button class="sbitxv3-btn macro-btn" id="F3">F3</button
-		><button class="sbitxv3-btn macro-btn" id="F4">F4</button
-		><button class="sbitxv3-btn macro-btn" id="F5">F5</button
-		><button class="sbitxv3-btn macro-btn" id="F6">F6</button
-		><button class="sbitxv3-btn macro-btn" id="F7">F7</button
-		><button class="sbitxv3-btn macro-btn" id="F8">F8</button
-		><button class="sbitxv3-btn macro-btn" id="F9">F9</button
-		><button class="sbitxv3-btn macro-btn" id="F10">F10</button>
-		<button class="sbitxv3-btn" id="console-open">CMD</button
-		><button class="sbitxv3-btn" id="telnet-open">TEL</button
-		><button class="sbitxv3-btn" id="recorder-open">REC</button
-		><button class="sbitxv3-btn" id="settings-open">SET</button>
-		<input type="text" class="sbitx-text-input sbitx-text-field" 
-			id="TEXT" placeholder="TEXT\CMD" size="20" />
-		</div><!-- end of more_keys -->
+	</div>
+</div>
+<!-- Mode Modal ends -->
+
+<!-- Panadapter/waterfall Span selection modal starts -->
+<div class="modal modal-sm" id="spanSelectionModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<center>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('SPAN','2.5K','spanValue');$('.modal').modal('hide');">2.5K</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('SPAN','6K','spanValue');$('.modal').modal('hide');">6K</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('SPAN','10K','spanValue');$('.modal').modal('hide');">10K</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('SPAN','25K','spanValue');$('.modal').modal('hide');">25K</span>
+				</center>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Panadapter/waterfall Span selection modal ends -->
+
+<!-- CW Mode starts -->
+<div class="modal modal-sm" id="cwInputSelectionModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<center>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('SPAN','IAMBIC','cwInputValue');$('.modal').modal('hide');">IAMBIC</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('SPAN','IAMBICB','cwInputValue');$('.modal').modal('hide');">IAMBIC-B</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('SPAN','STRAIGHT','cwInputValue');$('.modal').modal('hide');">STRAIGHT</span>
+				</center>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- CW Mode ends -->
+
+<!-- AGC modal starts -->
+<div class="modal modal-sm" id="agcSelectionModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<center>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('AGC','OFF','agcValue');$('.modal').modal('hide');">OFF</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('AGC','SLOW','agcValue');$('.modal').modal('hide');">SLOW</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('AGC','MED','agcValue');$('.modal').modal('hide');">MED</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('AGC','FAST','agcValue');$('.modal').modal('hide');">FAST</span>
+				</center>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- AGC modal starts -->
+
+<!-- Macro modal starts -->
+<div class="modal modal-sm" id="macroModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<div id="macroOptions">
+<!-- The contents are generated by the logger_list_macros() function in the script section below -->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Macro modal ends -->
+
+<!-- VFO STEP modal starts -->
+<div class="modal" id="vfoDialStepModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<center>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('STEP','10H','stepValue');$('.modal').modal('hide');">10Hz</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('STEP','100H','stepValue');$('.modal').modal('hide');">100Hz</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('STEP','1K','stepValue');$('.modal').modal('hide');">1Khz</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('STEP','10K','stepValue');$('.modal').modal('hide');">10Khz</span>
+					<span class="btn btnColorGrey buttonLabelRed btn-sm" onclick="update_Param('STEP','100K','stepValue');$('.modal').modal('hide');">100Khz</span>
+				</center>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- VFO STEP modal ends -->
+
+<!-- Virtual Keyboard starts -->
+<div id="virtKeyboard" class="window">
+	<div class="window-top">
+		<span class="vkTitle">Virtual Keyboard</span><button class="round red" onclick="$('#virtKeyboard').hide();"></button>
+	</div>
+	<div class="window-content">
 		<table id="keybd" class="sbitx-keystroke" width="100%">
 			<tr>
 			<td>Q</td><td>W</td><td>E</td><td>R</td><td>T</td><td>Y</td><td>U</td>
@@ -456,14 +783,23 @@
 			<td>M</td><td>,</td><td>.</td><td>?</td><td>7</td><td>8</td><td>9</td><td>0</td><td>[x]</td>
 			</tr>
 		</table>
-	</div> <!-- end of on screen keyboard -->
-	<div class="menu-item">
-		<a href="https://www.hamqsl.com/solar.html" 
-			title="Click to add Solar-Terrestrial Data to your website!">
-			<img src="https://www.hamqsl.com/solarbc.php">
-		</a>
 	</div>
-<!- tx panel -->
+</div>
+<!-- Virtual Keyboard ends -->
+
+<!-- Popup brief notifications that appear on bottom right. starts -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+	<div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="toast-header">
+			<strong class="me-auto">Notice</strong>
+			<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+		<div class="toast-body">
+			<div id="console">Hello</div>
+		</div>
+	</div>
+</div>
+<!-- Popup brief notifications that appear on bottom right. ends -->
 </body>
 
 <script>
@@ -573,19 +909,24 @@ function do_login() {
 	socket.onmessage = on_message;
 	socket.onclose = on_close;
 	socket.onerror = on_error;
-	if (document.location.hostname != "127.0.0.1")
+	if (document.location.hostname != "127.0.0.1") {
 		audio_start();
+	}
+	jQuery.get("/my-license.ini", function(data){
+		var radioClass = data.split('"');
+		$('#LICENSE').val(radioClass[1]);
+	});
+	setTimeout(function(){colorizeFrequency($('#FREQ').val());},500);
 }
 
 // ui panel switchers
 function show_login(){
 	$("#login_panel").show();
-	$(".sbitx-panel").hide();
-	$("#pan_adapter").hide();
-	$("#cmd").hide();
-	$("#sidebar").hide();
+	$("#sdr_page").hide();
 	$("#more_keys").hide();
-	$("#maincontrols").hide();
+	$("#virtKeyboard").hide();
+	$("#tools-btn").hide();
+	
 	if (document.location.hostname == "127.0.0.1")
 		show_keyboard();
 	
@@ -597,20 +938,12 @@ function show_login(){
 }
 
 function show_main(){
-	var dial = el("sidebar");
 	var main = el("main");
-	if (document.location.hostname == "127.0.0.1"){
-		main.style.marginLeft = 0;
-		dial.style.display = "none";	
-	}
-	else {
-		main.style.marginLeft = 200;
-		dial.style.display = "block";	
-	}
-	$("#pan_adapter").show();
 	$("#login_panel").hide();
+	$("#sdr_page").show();
 	$("#more_keys").show();
 	$("#maincontrols").show();
+	$("#tools-btn").show();
 	websocket_send("logbook=-1");
 	websocket_send("macros_list=macros_list");
 }
@@ -649,7 +982,9 @@ function draw_meters(event){
 
 
 function update_freq(freq){
-	websocket_send("freq "+freq);
+	websocket_send("FREQ "+freq);
+	$('#FREQ').val(freq);
+	colorizeFrequency(freq);
 }
 
 /* All tuning related functions including the soft-kob, drawing the dial etc. */
@@ -684,6 +1019,29 @@ function vfo_set(event){
 		websocket_send("FREQ " + vfo_b);
 	draw_dial();
 }
+
+
+function vfo_swap(){
+	var vfo_a = el("VFOA").value;
+	var vfo_b = el("VFOB").value;
+	var vfo   = el("VFO").value; //which one is used?
+	var f = el("FREQ").value;
+	
+	var swap = vfo_a;
+	vfo_a = vfo_b;
+	vfo_b = swap;
+
+	websocket_send("VFOB " + vfo_b);
+	websocket_send("VFOA " + vfo_a);
+	el("VFOA").value = vfo_a;
+	el("VFOB").value = vfo_b;
+	if (vfo == 'A')
+		websocket_send("FREQ " + vfo_a);
+	else
+		websocket_send("FREQ " + vfo_b);
+	draw_dial();
+}
+
 
 //draw_dial is called after setting FREQ to the current freq
 function draw_dial(){
@@ -813,23 +1171,11 @@ $(function($) {
 
 /* waterfall and spectrum */
 
-function resize_ui(){
-	var b = $("body");
-	var sidebar_width = $("#sidebar").width();
-	if ($("#sidebar")[0].style.display == "none")
-		sidebar_width = 0;
-	
-	log("resize_ui w = " + b.width() + " h = " + b.height());
 
-	el("waterfall").width = b.width()-sidebar_width;//-sidebar.width;
-	el("spectrum").width = b.width()-sidebar_width;//-sidebar.width;
-	$(".sbitx-panel").width = b.width()-sidebar_width;
-	el("CW_ui").width = b.width()-sidebar_width;//-sidebar.width;
-/*	if(b.height() > 600){
-		el("waterfall").height = b.height() / 4;
-		el("spectrum").height = b.height() /4;
-	}*/
-	height = b.height();
+function resize_ui(){
+	var b = $("#spectrum-wrap");
+	el("waterfall").width = b.width();
+	el("spectrum").width = b.width();
 }
 
 var waterfall_image = null;
@@ -1146,19 +1492,10 @@ function sbitx_onscreen_key(event){
 }
 
 function show_keyboard(){
-	$("#keybd").show();
+	$('#virtKeyboard').show();
 }
-/* Filter Panel */
 
-function receiver_panel_open(){
-	log("intializing the receiver panel");
-	//resize the waterfall and the spectrum, both need to be visible when tuning
-	var waterfall = el("waterfall");
-	var spectrum = el("spectrum");
-//	spectrum.height = 50;
-//	waterfall.height = 50;
-		
-}
+
 
 function filter_set(event){
 	var id =parseInt(event.currentTarget.id);
@@ -1227,6 +1564,7 @@ function close_panel(event){
 
 function sbitx_button_clicked(event){
 	websocket_send(event.currentTarget.id);
+	colorizeFrequency(freq);
 }
 
 
@@ -1379,15 +1717,20 @@ function FT8_list_append(list_id, text, style){
 
 	var label_position = text.search("~");
 	var label = text.substring(0,label_position);
-	if (label.length == 21)
-		label = label + '  ';
+	/*if (label.length == 21)
+		label = label + '';*/
 	var message = text.substring(label_position+1);
 	var item = document.createElement("li");
-	item.innerHTML = '<span class="ft8-label">' + label 
-		+ '</span><span class="ft8-message">' + message + '</span>';
 	item.className =  FT8_stylize_message(text, style);
+	item.innerHTML = '<span class="ft8-label '+item.className+'">' + label.trim() 
+		+ '</span><span class="ft8-message '+item.className+'">' + message.trim() + '</span>';
+	
 	item.id = text;
-	item.addEventListener("click", FT8_message_chosen);
+	if (list_id == 'wsjtx-cq-activity') {
+		item.addEventListener("click", FT8_cq_message_chosen);
+	} else {
+		item.addEventListener("click", FT8_message_chosen);
+	}
 	el(list_id).children[0].appendChild(item);
 	item.scrollIntoView({behaviour: 'smooth', block:'nearest', inline:'start'});
 }
@@ -1404,6 +1747,12 @@ function FT8_cq(event){
 	var cq_type = el("ft8_cq_kindof").value;
 	FT8_transmit(cq_type + " "  + el("MYCALLSIGN").value.toUpperCase() 
 			+ " " + el("MYGRID").value.substring(0,4).toUpperCase());
+}
+
+function FT8_cq_message_chosen(event){
+	var row = event.currentTarget;
+	$(row).addClass('highlightedItem');
+	FT8_message_chosen(event);
 }
 
 //you can choose messages that are:
@@ -1450,8 +1799,11 @@ function FT8_new_message(text, style){
 	log("ft8:" + text + ":" + style);
 	var words = text.split(' ');
 	FT8_list_append("wsjtx-activity", text, style) ;
+	if (words[7] == "CQ") {
+		FT8_list_append("wsjtx-cq-activity", text, style);
+	}
 	var mycallsign = $("#MYCALLSIGN").val().toUpperCase();
-	if (words[4] == $("#FT8-rx-freq").val() || text.search(mycallsign) >= 0)
+	if (text.search(mycallsign) >= 0)
 		FT8_list_append("wsjtx-rx", text, style);
 }
 
@@ -1463,20 +1815,13 @@ function FT8_open(){
 /* cw functionality */
 
 function cw_open(mode){
-	if (document.location.hostname == "127.0.0.1")
+	if (document.location.hostname == "127.0.0.1") {
 		el("keybd").style.display = "block";
+	}
 	text_focus = el("data_window");
-	if (mode == 'RTTY' || mode == 'PSK31'){
-		$("#data_chat").show();
-		$("#cw_settings").hide();
-	}
-	else {
-		$("#data_chat").hide();
-		$("#cw_settings").show();
-	}
-	var b = $("body");
-	if(b.height() > 600)
-		el("data_window").styleheight = 50;
+	
+	$("#data_chat").hide();
+	$("#cw_settings").show();
 }
 
 //the keystrokes, as they transfer to the sdr backend
@@ -1538,7 +1883,9 @@ function console_update(text){
 }
 
 function show_console_panel(){
+	show_keyboard();
 	open_panel("console_panel");
+	$('html, body').animate({ scrollTop: $(document).height() }, 1000);
 }
 
 /* telnet functionality */
@@ -1581,22 +1928,28 @@ function telnet_update(text){
 	spots.unshift(s);
 }
 
+
 function show_telnet_panel(){
+	show_keyboard();
 	open_panel("telnet_panel");
+	$('html, body').animate({ scrollTop: $(document).height() }, 1000);
 }
 
-/* voice functionality */
-function voice_open(){
-//	el("spectrum").height =  150;
-//	el("waterfall").height = 150;
-}
 
 function ptt_tx(event){
-		websocket_send("t ");
+	websocket_send("t ");
+	$('#ptt_tx').removeClass('btnColorGreen');
+	$('#ptt_tx').addClass('btnColorBrtGreen');
+	$('#ptt_rx').removeClass('btnColorYlw');
+	$('#ptt_rx').addClass('btnColorMstrd');
 }
 
 function ptt_rx(event){
 	websocket_send("r ");
+	$('#ptt_tx').addClass('btnColorGreen');
+	$('#ptt_tx').removeClass('btnColorBrtGreen');
+	$('#ptt_rx').addClass('btnColorYlw');
+	$('#ptt_rx').removeClass('btnColorMstrd');
 }
 
 /* logger functionality */
@@ -1620,12 +1973,7 @@ function logger_qrz(event){
 		return;
 
 	var url = "https://www.qrz.com/db/" + $("#CALL").val();
-	if (qrz_window == null)
-		qrz_window = window.open(url, "_blank");
-	else if (qrz_window.closed)
-		qrz_window = window.open(url, "_blank");
-	else
-		qrz.window.location = url;
+	qrz_window = window.open(url, "_blank");
 }
 
 function logbook_open(event){
@@ -1695,6 +2043,7 @@ function logger_keys_update(){
 function logger_set_macro(macro_file_name){
 	if(el("MACRO").value != macro_file_name)
 		el("MACRO").value = macro_file_name;
+	$('#macroValue').html(macro_file_name);
 	jQuery.get("/"+macro_file_name+".mc", function(data){macros_file = data; logger_keys_update();});
 }
 
@@ -1715,11 +2064,18 @@ function logger_toggle_macros(event){
 
 function logger_list_macros(list){
 	var names = list.split("|");
-	var sel = el("MACRO");
-	sel.innerHTML = "";
-	for (var i = 0; i < names.length; i++)
-		if (names[i].length > 0)
-			sel.appendChild(new Option(names[i], names[i]));
+	var contents = '<center>';
+	
+	var buttonTemplate = "<span class=\"btn btnColorGrey buttonLabelRed btn-sm\" onclick=\"update_Param('MACRO','%%VALUE%%','macroValue');logger_set_macro('%%VALUE%%');$('.modal').modal('hide');\">%%VALUE%%</span>";
+
+	for (var i = 0; i < names.length; i++) {
+		if (names[i].length > 0) {
+			if (!((i+1)%3)) {contents += "<br>";}
+			contents += buttonTemplate.replaceAll("%%VALUE%%", names[i]);
+		}
+	}
+	contents += '</center>';
+	$('#macroOptions').html(contents);
 }
 
 // trigged when the back sdr changes the macros
@@ -1837,12 +2193,16 @@ function open_settings(){
 }
 
 function save_settings(){
+	
 	websocket_send("MYCALLSIGN " + el("MYCALLSIGN").value);
 	websocket_send("MYGRID " + el("MYGRID").value);
 	websocket_send("PASSKEY " + el("PASSKEY").value);
 	websocket_send("SIDETONE " + el("SIDETONE").value);
 	websocket_send("TELNETURL " + el("TELNETURL").value);
 	$("#settings_panel").hide();
+	$("#toolsModal").modal('hide');
+	
+	colorizeFrequency($('#FREQ').val());
 }
 
 /* recorder panel */
@@ -1958,55 +2318,151 @@ function ui_tick(){
 		logbook_request(-logbook_top_row_id);
 }
 
+
+
+
+function update_Param(param,agcVal,valueDiv) {
+	websocket_send(param+" "+agcVal);
+	param_Set(param,agcVal,valueDiv);
+}
+
+function param_Set(param,agcVal,valueDiv) {
+	$('#'+param).val(agcVal);
+	$('#'+valueDiv).html(agcVal);
+}
+
+function update_step(stepVal) {
+	websocket_send("STEP "+stepVal);
+	step_set(stepVal);
+}
+
+function step_set(stepVal) {
+	$('#STEP').val(stepVal);
+	$('#stepValue').html(stepVal);
+}
+
+function toggleBtn(btnSelector,cmd) {
+	currentState=$('#'+cmd).val();
+	if (currentState == 'ON') {
+		websocket_send(cmd+" OFF");
+		renderToggleBtn('OFF',btnSelector,cmd);
+	} else {
+		websocket_send(cmd+" ON");
+		renderToggleBtn('ON',btnSelector,cmd);
+	}
+}
+
+function renderToggleBtn(newState,btnSelector,cmd) {
+	if (newState == 'OFF') {
+		$('#'+cmd).val('OFF');
+		$("#"+btnSelector).removeClass('ledOn');
+		$("#"+btnSelector).addClass('ledOff');
+	} else {
+		$('#'+cmd).val('ON');
+		$("#"+btnSelector).removeClass('ledOff');
+		$("#"+btnSelector).addClass('ledOn');
+	}
+}
+
+function update_mode(new_mode) {
+	websocket_send("MODE "+new_mode);
+	mode_set(new_mode);
+}
+
 function mode_set(new_mode){
+	
+	$('#MODE').val(new_mode);
+	$('#modeValue').html(new_mode);
 
 	var wf = el("waterfall");
 	var sp = el("spectrum");
-	wf.height = 100;
-	sp.height = 100;
-
+	sp.height = 70;
+	wf.height = 70;
 	$(".mode-panel").hide();
+	
+	$("#FT8_ui").hide();
+	$("#FT8_ui_RX").hide();
+	$("#FT8_ui_CQ").hide();
+	$("#FT8_controls").hide();
+	$("#cw_settings").hide();
+	$("#keybd-container").hide();
+	$("#CW_ui").hide();
+	$("#recorder").hide();
+	$("#Voice_ui").hide();
+	$("#macroBtn").hide();
+	$("#more_keys").hide();
+	$("#virtKeyboard").hide();
+	
+	$("#leftSidebar").removeClass('col-sm-3 col-sm-4');
+	$("#rightContent").removeClass('col-sm-8 col-sm-9');
+	
 	switch(new_mode){
 		case 'CW':
-		case 'CWR':
-			wf.height=150;
-			sp.height = 100;
 			cw_open(new_mode);
 			$("#CW_ui").show();
+			$("#keybd-container").show();
+			$("#more_keys").show();
+			$("#macroBtn").show();
 			logger_set_macro("CW1");
-		break;
+			$("#leftSidebar").addClass('col-sm-4');
+			$("#rightContent").addClass('col-sm-8');
+			break;
+		case 'CWR':
+			cw_open(new_mode);
+			$("#CW_ui").show();
+			$("#keybd-container").show();
+			$("#more_keys").show();
+			$("#macroBtn").show();
+			logger_set_macro("CW1");
+			$("#leftSidebar").addClass('col-sm-4');
+			$("#rightContent").addClass('col-sm-8');
+			break;
 		case "LSB":
-		case "USB":
-		case "2TONE":
-			wf.height=150;
-			sp.height = 100;
 			$("#Voice_ui").show();
+			$("#recorder").show();
+			$("#keybd-container").show();
+			$("#leftSidebar").addClass('col-sm-3');
+			$("#rightContent").addClass('col-sm-9');
+			break;
+		case "USB":
+			$("#Voice_ui").show();
+			$("#recorder").show();
+			$("#keybd-container").show();
+			$("#leftSidebar").addClass('col-sm-3');
+			$("#rightContent").addClass('col-sm-9');
+			break;
+		case "2TONE":
+			$("#Voice_ui").show();
+			$("#keybd-container").show();
 			logger_set_macro("CW1");
+			$("#leftSidebar").addClass('col-sm-3');
+			$("#rightContent").addClass('col-sm-9');
 			break;
 		case 'FT8':
-			sp.height = 50;
-			wf.height=50;
 			FT8_open();
 			$("#FT8_ui").show();
+			$("#FT8_ui_RX").show();
+			$("#FT8_ui_CQ").show();
+			$("#FT8_controls").show();
+			$("#keybd-container").show();
+			$("#more_keys").show();
+			$("#macroBtn").show();
 			logger_set_macro("FT8");
+			$("#leftSidebar").addClass('col-sm-4');
+			$("#rightContent").addClass('col-sm-8');
 			break;
 		default:
-			wf.height=150;
 			var panel_name = "#" + new_mode + "_ui";
 			var active_panel = $(panel_name);
 			logger_set_macro("CW1");
-			if (active_panel.length > 0)
-				$(panel_name).show();
-					return;
+			$("#leftSidebar").addClass('col-sm-3');
+			$("#rightContent").addClass('col-sm-9');
+			if (active_panel.length > 0) { $(panel_name).show(); }
+			return;
 	}
-//	if (window[new_mode+"_open"] == undefined)
-//		return;
-//	window[new_mode + "_open"]();
+
 }
 
-function mode_changed(event){
-	mode_set(event.currentTarget.value);
-}
 
 //audio interpolation variables
 var prev_sample = 0;
@@ -2107,9 +2563,33 @@ function response_handler(response){
 		case 'MACRO':
 			logger_macro_changed_from_sdr(args);
 			break;
+		case 'AGC':
+			param_Set(cmd,args,'agcValue');
+			break;
 		case 'MODE':
 			mode_set(args); 
-			//There is no break statement here, MODE continues to default case
+			break;
+		case 'STEP':
+			param_Set(cmd,args,'stepValue');
+			break;
+		case 'SPAN':
+			param_Set(cmd,args,'spanValue');
+			break;
+		case 'CW_INPUT':
+			param_Set(cmd,args,'cwInputValue');
+			break;	
+		case 'SPLIT':
+			renderToggleBtn(args,'splitLED',cmd);
+			break;
+		case 'FT8_AUTO':
+			renderToggleBtn(args,'autoLED',cmd);
+			break;
+		case 'FT8_TX1ST':
+			renderToggleBtn(args,'tx1stLED',cmd);
+			break;
+		case 'RIT':
+			renderToggleBtn(args,'ritLED',cmd);
+			break;
 		default:
 			e = el(cmd);
 			if (e){
@@ -2144,6 +2624,8 @@ function response_handler(response){
 				draw_meters();
 //				log("meter : " + el("POWER").value + "," + el("REF").value);
 			}
+			
+			//colorizeFrequency($('#FREQ').val());
 	}
 }
 
@@ -2158,6 +2640,7 @@ window.addEventListener("resize", resize_ui);
 window.addEventListener("click", on_click);
 $(".sbitx-btn").on("click", sbitx_button_clicked);
 $(".sbitxv3-btn").on("click", sbitx_button_clicked);
+$(".bandBtns").on("click", sbitx_button_clicked);
 //$(".sbitxv3-control").on("click", sbitxv3_control_clicked);
 $(".sbitx-selection").on("change", sbitx_selection_changed);	
 $(".sbitx-slider").on("input", sbitx_slider_changed);
@@ -2167,16 +2650,21 @@ $(".sbitx-panel-title").on("click", close_panel);
 $(".sbitx-text-field").on("change keydown paste input",sbitx_text_changed);
 $(".linear-slider").on("input", on_linear_moved);
 $(".linear").on("click",  linear_toggle);
-$(".macro-btn").on("click", logger_trigger_macro);
+$("#wsjtx-cq-activity li").on("click", function(){console.log("WWWWWWWWWWWWWWWWWWWww");});
+//$(".macro-btn").on("click", logger_trigger_macro);
+
+const passkeyInput = document.getElementById('passkey');
+passkeyInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    do_login(); // Perform login attempt
+  }
+});
 
 //ft8 specific handlers
 //$(".ft8-clickable").on("click", FT8_message_chosen);
 
 //specific control handler
 $("#REF").on("change", draw_meters);
-$("#MODE").on("change", mode_changed);
-$("#console-open").on("click", show_console_panel);
-$("#telnet-open").on("click", show_telnet_panel);
 $("#keyboard-open").on("click", show_keyboard);
 $("#MACRO").on("change", logger_get_macro_file);
 //vfo buttons
@@ -2242,7 +2730,11 @@ $("#record_start").on("click", start_recorder);
 $("#record_stop").on("click", stop_recorder);
 
 //toggle the soft dial knob
-$("#dial").on("click", toggle_dial);
+//$("#dial").on("click", toggle_dial);
+
+//$("#vfoDial-btn").on("click", toggle_dial);
+
+
 window.onload = ui_init();
 
 //init the state of the ui
@@ -2250,14 +2742,12 @@ function ui_init(){
 	$(".sbitx-text-input").on("focus", sbitx_text_focus);
 	$("#tx_rx").hide();
 	$(".sbitx-panel").hide();
+	$("#tools-btn").hide();
 	$("#extra-controls").hide(); //do something about these
 	$("#more_keys").hide(); //do something about these
 	logger_set_macro("CW1");
 	logbook_reset();
-	if (document.location.hostname == "127.0.0.1"){
-//		window.addEventListener("contextmenu", function(e) { e.preventDefault(); }); //uncomment in production
-//		$("#tuning_knob").hide();
-	}
+
 	if (document.location.hostname == "127.0.0.1"){
 		show_keyboard();
 		do_login();
@@ -2338,25 +2828,184 @@ function on_click(event){
 		collection[i].style.display = "";
 }
 
-function toggle_dial(event){
-	var dial = el("sidebar");
-	var main = el("main");
-	if (dial.style.display == "block"){
-		main.style.marginLeft = 0;
-		dial.style.display = "none";	
-	}
-	else {
-		main.style.marginLeft = 200;
-		dial.style.display = "block";	
-	}
-	resize_ui();	
-}
 
 function write_console(str){
-	var con = $("#console");
-	con[0].innerHTML = str;
-	con.fadeIn(0);
-	con.fadeOut(6000);
+	$('#console').html(str);
+	const toastLiveExample = document.getElementById('liveToast');
+	const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+	toastBootstrap.show();
 }
+
+function scale (number, inMin, inMax, outMin, outMax) {
+    return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+}
+
+$("#spectrum-wrap").on( "click", function(e) {
+console.log("im here 2");
+	var position = $("#spectrum-wrap").position();
+	var widthOfSpectrum = $("#spectrum-wrap").width();
+	var bootStrapPadding = 12; //Bootstrap pads the grid system 12 pixels.
+	var clickedPosition = parseInt(e.clientX-bootStrapPadding-position.left);
+	var span = $('#SPAN').val();
+	var offset = 300;
+	var mode = $('#MODE').val();
+	var activeFrequency = $('#FREQ').val();
+	
+	
+	switch(span) {
+		case "25K":
+			span = 12500;
+			offset=600;
+			break;
+		case "10K":
+			span = 5000;
+			offset=600;
+			break;
+		case "6K":
+			span = 3000;
+			offset=600;
+			break;
+		default:
+			span = 1250;
+			offset=600;
+	}
+	
+	
+	if (mode == "USB") {offset = -offset;}
+	
+	//console.log ("freq:"+activeFrequency+" span:"+span);
+
+	//Let's first get the lowest and highest frequency in viewport
+	var frequencyLow = parseInt(activeFrequency)-parseInt(span);
+	var frequencyHigh = parseInt(activeFrequency)+parseInt(span);
+	
+	console.log ("clicked Position:"+clickedPosition+" 0->"+widthOfSpectrum+" low:"+frequencyLow+" high:"+frequencyHigh);
+	
+	// Using the scale function just above this function, calculate the frequency clicked on.
+	var pickedFrequency = parseInt(scale(clickedPosition,0,widthOfSpectrum,frequencyLow,frequencyHigh)+offset);
+//console.log("clicked Position:"+clickedPosition);
+//console.log("You picked Frequency: "+pickedFrequency);
+
+	websocket_send("freq "+pickedFrequency);
+
+	$('#FREQ').val(pickedFrequency);
+	colorizeFrequency($('#FREQ').val());
+});
+
+
+//These are the ranges of perms per license, per operation mode, per band.
+let bandPerms =
+	{
+		"TECH": {
+			"cw": [
+				{"min":3525000,"max":3600000},
+				{"min":7025000,"max":7125000},
+				{"min":21025000,"max":21200000}
+			],
+			"data": [
+				{"min":28000000,"max":28300000}
+			],
+			"phone": [
+				{"min":000,"max":000}
+			],
+			"ssb": [
+				{"min":28300000,"max":28500000}
+			]
+		},
+		"GENERAL": {
+			"data": [
+				{"min":3525000,"max":3600000},
+				{"min":7025000,"max":7125000},
+				{"min":10100000,"max":10150000},
+				{"min":14025000,"max":14150000},
+				{"min":18068000,"max":18110000},
+				{"min":21025000,"max":21200000},
+				{"min":24890000,"max":24930000},
+				{"min":28000000,"max":28300000}
+			],
+			"phone": [
+				{"min":3800000,"max":4000000},
+				{"min":7175000,"max":7300000},
+				{"min":14225000,"max":14350000},
+				{"min":18110000,"max":18168000},
+				{"min":21275000,"max":21450000},
+				{"min":24930000,"max":24990000},
+				{"min":28300000,"max":29700000}
+			]
+		},
+		"EXTRA": {
+			"data": [
+				{"min":3500000,"max":3600000},
+				{"min":7000000,"max":7125000},
+				{"min":10100000,"max":10150000},
+				{"min":14000000,"max":14150000},
+				{"min":18068000,"max":18110000},
+				{"min":21000000,"max":21200000},
+				{"min":24890000,"max":24930000},
+				{"min":28000000,"max":28300000}
+			],
+			"phone": [
+				{"min":3600000,"max":4000000},
+				{"min":7125000,"max":7300000},
+				{"min":14150000,"max":14350000},
+				{"min":18110000,"max":18168000},
+				{"min":21200000,"max":21450000},
+				{"min":24930000,"max":24990000},
+				{"min":28300000,"max":29700000}
+			]
+		},
+		"ADVANCED": {
+			"data": [
+				{"min":3525000,"max":3600000},
+				{"min":7025000,"max":7125000},
+				{"min":10100000,"max":10150000},
+				{"min":14025000,"max":14150000},
+				{"min":18068000,"max":18110000},
+				{"min":21025000,"max":21200000},
+				{"min":24890000,"max":24930000},
+				{"min":28000000,"max":28300000}
+			],
+			"phone": [
+				{"min":3700000,"max":4000000},
+				{"min":7125000,"max":7300000},
+				{"min":14175000,"max":14350000},
+				{"min":18110000,"max":18168000},
+				{"min":21225000,"max":21450000},
+				{"min":24930000,"max":24990000},
+				{"min":28300000,"max":29700000}
+			]
+		}
+	};
+
+function colorizeFrequency(freq) {
+	permColor = {"cw":"#FFF","data":"#F00","phone":"#0F0","ssb":"#e5e500"};
+	$('#current_freq').css("color", "#FFF");
+	userLicense = $('#LICENSE').val();
+
+	Perms = bandPerms[userLicense];  //Grab the section of perms based on user's license setting.
+
+	for (let modeCount = 0; modeCount < Object.keys(permColor).length; ++modeCount) {
+		
+		var indexName = Object.keys(permColor)[modeCount];
+
+		if ( typeof Perms[indexName] !== 'undefined') {
+			for (let index = 0; index < Perms[indexName].length; ++index) {
+				if ( (freq >= Perms[indexName][index]['min']) && (freq <= Perms[indexName][index]['max']) ) {
+					$('#current_freq').css("color", permColor[indexName]);
+				}
+			}
+		}
+	}
+	return;
+}
+
+
+
+//Swap the cfo twice to sync VFO B since it is not volunteered delivery from websocket upon init.
+//A Bit hacky but does the job.
+vfo_swap();
+vfo_swap();
+
 </script>
+<script src="/library/draggable-window/draggable-window.js"></script>
 </html>
