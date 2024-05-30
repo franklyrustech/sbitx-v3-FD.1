@@ -1,1 +1,1173 @@
+body {
+	overflow-x: hidden;
+	background-color: #1f1f1f !important;
+	color:white;
+}
 
+#sdr_page:after {
+	content:"";
+	display: table;
+	clear: both;
+}
+
+/* tx meters use these */
+.slider-label {
+	display: inline-block;
+	width: 50px;
+	text-align: right;
+	font-weight: bold;
+}
+
+.sbitxv3-label, .linear-label, .FnKey {
+	color:cyan;
+	font-weight:bold;
+}
+
+.buttonLabelRed {
+	color:#ff4343 !important;
+	font-weight:bold !important;
+}
+
+.buttonLabelRed.smaller {
+    font-size: 10px;
+    margin-top: -1px;
+    line-height: 10px;
+}
+
+.sbitx-slider {
+	width: 100px;
+}
+
+.slider-reading {
+	display: inline-block;
+	text-align: right;
+	width: 50px;
+}
+
+.sbitx-selection {
+	border: none;
+	font-size: 12pt;
+	color: white; 
+}
+
+.sbitx-selection option {
+	font-size: 11px;
+}
+
+select, select option {
+	background: unset;
+	color: #fff; 
+	opacity: 1;
+}
+
+.sbitx-text-input {
+	height: 30px;
+	font-size: 12pt;
+	readonly: true;
+}
+
+/* topbar (actually to the left right now) */
+
+#sidebar{
+
+}
+
+#restore-btn {
+	float: right;
+	display: inline-block;
+	background-color: #444;
+	font-size: 20pt;
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	padding-left: 5px;
+	padding-right: 5px;
+	text-align: center;
+	color: white;
+	margin: 2px;
+	border-radius: 5px;	
+	z-index: 99;
+}
+
+#vfoDial-btn {
+	float: right;
+	display: inline-block;
+	background-color: #444;
+	position: fixed;
+	top: 0px;
+	right: 95px;
+	padding: 0 5px;
+	text-align: center;
+	color: white;
+	margin: 2px;
+	border-radius: 5px;	
+	z-index: 99;
+	font-size:20pt
+}
+
+
+#keyboard-btn {
+	float: right;
+	display: inline-block;
+	background-color: #444;
+	position: fixed;
+	top: 0px;
+	right: 30px;
+	padding: 5px;
+	text-align: center;
+	color: white;
+	margin: 2px;
+	border-radius: 5px;	
+	z-index: 99;
+}
+
+#spectrum-wrap {
+	position:relative;
+}
+
+#vfoDial-btn:hover,#keyboard-btn:hover, #restore-btn:hover,
+#openTools:hover, #mySettings:hover, .linear:hover,
+.buttonType1:hover, input:hover, .logBtns:hover,
+#current_freq:hover, #other_freq:hover {cursor:pointer !important;}
+
+#keyboard-btn img {
+	height:30px;
+}
+
+#vfo-btn {
+}
+
+#vfoValues {
+	margin-top:5px;
+}
+
+.menu-item {
+	display: block;
+	width: 200px;
+	border-collapse: collapse;
+	padding: 0;
+	margin-bottom:10px;
+	vertical-align: top;
+	text-align: left;
+}
+
+#tx_meters {
+	position: absolute;
+	background-color: #ff471a;
+	padding: 10px;
+	width: 200px;
+	height: 80px;
+	color: white;
+	display: none;
+	padding-left: 10px;
+	z-index : 9999;
+}
+
+#rx_controls {
+	display: block;
+	height: 60px;
+}
+
+
+#tuning_knob {
+	margin:0 auto;
+}
+
+
+#dial {
+	padding-top:5px;
+	text-align:center;
+	min-height:80px;
+}
+
+#freq_status {
+	background-color: yellow;
+	color: white;
+}
+
+#current_freq{
+	font-size: 20pt;
+	line-height: 23px;
+	font-weight: bold;
+	color: #FFF;
+	padding: 2px 10px;
+	text-align:center;
+}
+
+#other_freq {
+	color: #0ff;
+	font-size:10pt;
+	padding: 2px 10px;
+}
+
+.dial_details {
+	background-color: black;
+	color: white;
+	border-radius: 5px;
+	font-size: 9pt;
+	padding-left: 5px;
+	padding-right: 5px;
+	display: inline-block;
+	width: 72px;
+	text-algin: left;
+}
+
+#tx_drive_reading {
+	color: white;
+	background-color: red;
+}
+
+/* end of dial styling */
+
+#current_freq:after{
+	text-align: right;
+	float: right;	
+}
+
+/* logger styling */
+.logger-input {
+	border-collapse: collapse;
+	border: 1px solid white;
+	height: 35px;
+	text-transform:uppercase;
+}
+
+.logger-button {
+	height: 30px;
+	border-collapse: collapse;
+	border: none;
+	background-color: #1a75ff;
+	color: white;
+	margin: 5px;
+	border-radius: 10px;
+}
+
+#loggerInputs button {
+	height:42px;
+	margin-top:2px;
+}
+
+#loggerInputs input {
+	height:21px;
+	background-color: #cdffb8;
+}
+
+#loggerInputs input.doubleheight {
+	height:43px;
+}
+
+#SENT, #RECV {
+	width: 60px;
+}
+
+/* CW panel: also used for RTT/PSK31/CW/CWR */
+
+#CW_ui {
+	width:100%;
+}
+
+#data_window {
+	height: 220px;
+	color: green;
+	text-align: left;
+	font-size: 12pt;
+	overflow: auto;
+	border: solid 1px #333;
+}
+
+.data_rx{
+	color: #0F0;
+}
+
+.data_tx {
+	color: orange;
+	font-weight: bold;
+}
+
+#data_chat_tx {
+	width: 150px;
+	height: 30px;
+	padding-right: 20px;
+	background-color: red;
+	color: white;
+}
+
+#data_chat_rx {
+	width: 150px;
+	height: 30px;
+	padding-left: 20px;
+	background-color: blue;
+	color: white;
+}
+
+/* Voice panel */
+#Voice_ui {
+	text-align: center;
+	padding-bottom: 10px;
+	border: none;
+	background-color: #1f1f1f;
+	width:100%;
+}
+
+#ptt_tx, #ptt_rx {
+	display:block;
+	width: 45%;
+	height: 150px;
+	font-weight:bold;
+	text-align:center;
+	border-radius:3px;
+	border:1px solid #1f1f1f;
+	position:relative;
+	padding:30px 0;
+	font-size: 48px;
+}
+
+#ptt_tx {
+	background-color: #0F0;
+	color: black;
+	float:left;
+}
+#ptt_rx {
+	background-color: #FF0;
+	color: black;
+	float:right;
+}
+
+#ptt_tx:hover, #ptt_rx:hover {cursor:pointer;}
+
+/* logbook, opens in a different tab */
+#logbook_panel {
+	zindex : 1;
+	opacity: 1;
+	z-index: 1;
+}
+
+#logbook_panel table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid white;
+}
+
+#logbook_table thead tr {
+	display: block;
+	font-size: 11pt;
+	color:white; 
+	text-align: right;
+}
+
+#logbook_table tbody {
+	display: block;
+	height: 200px;
+	width: 100%;
+	overflow: auto;
+}
+
+#logbook-toobar {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.logbook-id {
+	width: 50px;
+	font-size: 9pt;
+	color: #444;
+}
+
+.logbook-datestamp {
+	width: 150px;
+	font-size: 9pt;
+	color: #888; 
+}
+
+.logbook-field {
+	font-size: 10pt;
+	color: white;
+	text-transform:uppercase;
+	text-align: right;
+}
+
+#logbook-search {
+	text-transform:uppercase;
+}
+
+.logbook-serial{width: 30px;}
+.logbook-freq{width: 75px;}
+.logbook-call{width: 75px;}
+.logbook-mode{width: 50px;}
+.logbook-sent{width: 70px;}
+.logbook-recv{width: 70px;}
+
+/* recorder panel */
+#recorder_panel {
+	width: 300px;
+	display: none;
+	position: absolute;
+	background-color: white;
+	margin-top: 50px;
+	padding: 2px;
+	color: black;
+}
+
+.recorder-btn {
+	height: 40px;
+	width: 75px;
+	border-collapse: collapse;
+	border: 1px solid #888;
+	background-color: black;
+	color: white;
+	margin: 2px;
+}
+
+#record_start {
+	color: white;
+	background-color: red;
+	width: 60px;
+	font-weight: bold;
+	position:relative;
+	float:left;
+}
+
+#record_stop {
+	background-color: white;
+	color: black;	
+	width: 60px;
+	font-weight: bold;
+	position:relative;
+	float:left;
+}
+
+/* console panel */
+
+#console_window{
+	width: 100%;
+	height: 200px;
+	white-space: pre-wrap;
+	overflow: auto;
+	font-family: monospace;
+	color: green; 
+	border: solid 1px green;
+	padding-bottom: 3px;
+	background-color: black;
+	text-align: left;
+	vertical-align: top;
+}	
+
+#command_bar {
+	width: 100%;
+}
+
+#text_in {
+	width: 95%;
+	border: solid 1px white;
+}
+
+/* telnet */
+
+#telnet_window{
+	width: 100%;
+	height: 200px;
+	white-space: pre-wrap;
+	overflow: auto;
+	font-family: monospace;
+	font-size: 8pt;
+	color: green; 
+	border: none;
+	padding-bottom: 3px;
+	background-color: black;
+	text-align: left;
+	vertical-align: top;
+}	
+
+#telnet_command_bar {
+	width: 95%;
+	border: solid 1px white;
+	margin:3px;
+}
+
+#telnet_in {
+	width: 100%;
+	border: white;
+}
+
+#telnet {
+}
+
+#tclose {
+}
+/* settings panel */
+
+#settings_panel {
+	padding-bottom: 10px;
+	position: fixed;
+	left: 200px;
+	top : 0px;
+	border: solid 1px white;
+	background-color: black; 
+	zindex : 1;
+	opacity: 1;
+	z-index: 1;
+}
+
+.settings-element {
+	margin: 8px;
+}
+
+.settings-label {
+	display: inline-block;
+	width: 150px;
+	text-align: right;
+}
+
+.settings_input {
+	text-transform:uppercase;
+}
+
+/* coloring for the values */
+.greyed {
+	color: #888;
+}
+
+/* panel styling */
+.sbitx-panel {
+	float: left;
+	padding: 0;
+	background: black;
+	border-collapse: collapse;
+}
+
+.sbitx-panel-title {
+	float: right;
+	display: inline-block;
+	background-color: black;
+	font-size: 14pt;
+}
+
+.sbitx-btn-back {
+	font-size: 12pt;
+	background-color: black;
+	color: white;
+	border: none;
+}
+
+#pan_adapter {
+	margin-bottom: 3px;
+}
+
+#spectrum canvas {
+	position: absolute;
+}
+		
+/* FT8/ wsjt-x styling */
+
+.sbitx-list-container {
+	display: inline-block;
+	font-family: courier, monspace-ui, monospace;
+	font-size: 10pt;
+	height: 200px;
+	width:100%;
+	overflow: auto;
+	border: none;
+	color:white;
+}
+
+/* styling the FT8 list */
+.ft8-label {
+	font-size: 7pt;
+	display: inline-block;
+	width: 108px;
+	color: white;
+}
+
+.ft8-message {
+	font-size: 9pt;
+	font-weight: bold;
+	color:#00ff00;
+}
+
+/* generic styling of ui elements */
+
+.sbitx-list-item:hover {cursor:pointer;}
+
+.sbitx-list-box .ui-selected {background: grey; color: white;}
+.sbitx-list-box {
+	list-style-type:none; 
+	margin: 0; padding: 0; 
+	font-size: 9pt;
+}
+.sbitx-list-box li{
+	margin: 0; 
+	padding: 0; 
+	height: 9pt;
+}
+
+body {
+			background-color: #000;
+			color: cyan;
+			font-family: Helvetica, Verdana, Sans-serif;
+			margin: 0;
+			padding: 0;
+}
+
+#kbd {
+	padding: 10px;
+}
+
+#kbd_btn:hover .drop-content {
+	display: block;
+}
+
+.help_text{
+	font-size: 10pt;
+	color: white;
+	margin-left: 30px;
+}
+
+/* v3 styles */
+
+.macroSelectLabel {
+	color:#000;
+	width:52px;
+	border:0
+}
+
+#macro_keys td {
+/*	width: 45px;
+	width: 9%;
+*/
+	width: 10%;
+	margin: 2px;
+	padding: 2px;
+	height: 40px;
+	text-align: center;
+	border-collapse: collapse;
+	border: solid 1px white;
+	background-color: black;
+	opacity: 1.0;
+	font-size: 15pt;
+}
+
+.sbitxv3-control {
+	text-align: center;
+	padding: 3px;
+	height: 36px;
+	min-height: 36px;
+	font-size: 12px;
+	vertical-align:top;
+	display: inline-block;
+}
+
+.sbitxv3-selection {
+	border: 0;
+	font-size: 13px;
+	margin: 0;
+	width: 35px;
+	text-align:center;
+
+	-webkit-appearance: none;
+	-ms-appearance: none;
+	-moz-appearane: none;
+	appearance: none;
+}
+
+.sbitxv3-selection option {
+	font-size: 11px;
+	width: 70px;
+}
+
+#bands {
+	text-align: center;
+	padding:0;
+	font-size: 11px;
+}
+
+.logBtns {
+	height: 29px;
+	width: 36px;
+	font-size: 13px;
+	color: white;
+	vertical-align:top;
+	display: inline-block;
+	line-height: 0;
+	padding: 0px;
+	position:relative;
+	border:1px;
+	border-radius:3px;
+	margin:0px;
+}
+
+.buttonType1 {
+	text-align: center;
+	padding: 3px;
+	height: 44px;
+	min-height: 43px;
+	font-size: 12px;
+	vertical-align:top;
+	display: inline-block;
+	border-radius: 3px;
+	width:40px;
+	margin-bottom:2px;
+	position:relative;
+}
+
+.btnColorGrey {
+	background: rgb(41,41,41);
+	background: linear-gradient(180deg, rgba(41,41,41,1) 0%, rgba(60,60,60,1) 5%, rgba(87,87,87,1) 24%, rgba(59,59,59,1) 94%, rgba(46,46,46,1) 100%);
+}
+
+.btnColorGreen {
+	background: rgb(45,99,42);
+	background: linear-gradient(180deg, rgba(45,99,42,1) 0%, rgba(110,179,95,1) 8%, rgba(65,144,61,1) 27%, rgba(105,143,101,1) 92%, rgba(47,66,46,1) 100%);
+}
+.btnColorBrtGreen {
+	background: rgb(74,168,69);
+	background: linear-gradient(180deg, rgba(74,168,69,1) 0%, rgba(109,222,85,1) 8%, rgba(17,255,5,1) 27%, rgba(82,173,72,1) 92%, rgba(68,112,65,1) 100%);
+}
+
+.btnColorMstrd {
+	background: rgb(215,210,181);
+	background: linear-gradient(180deg, rgba(215,210,181,1) 0%, rgba(223,211,184,1) 5%, rgba(207,199,138,1) 17%, rgba(163,160,138,1) 80%, rgba(80,80,80,1) 100%);
+}
+
+.btnColorYlw {
+	background: rgb(168,164,69);
+	background: linear-gradient(180deg, rgba(168,164,69,1) 0%, rgba(246,247,83,1) 8%, rgba(237,255,5,1) 27%, rgba(193,189,70,1) 92%, rgba(108,112,65,1) 100%);
+}
+
+
+.btnColorWht {
+	background: rgb(214,214,214);
+	background: linear-gradient(180deg, rgba(214,214,214,1) 0%, rgba(208,208,208,1) 5%, rgba(247,247,247,1) 24%, rgba(198,198,198,1) 100%);
+	color:#000;
+}
+
+.btnColorRed {
+	background: rgb(98,42,42);
+	background: linear-gradient(180deg, rgba(98,42,42,1) 0%, rgba(179,95,95,1) 8%, rgba(215,50,50,1) 27%, rgba(156,22,22,1) 92%, rgba(66,46,46,1) 100%);
+}
+
+.btnColorBlue {
+	background-color:#0033cc;
+}
+
+.btnColorLtBlue {
+	background-color:#0033cc;
+}
+
+.btnColorRed {
+	background-color:#0033cc;
+}
+
+#macroBtn {
+	display: inline-block;
+	width: 55px;
+	float: left;
+	margin: 2px 4px;
+	height: 40px;
+	padding: 2px;
+}
+
+#ft8BandShortcuts {
+	margin-right:4px;
+}
+
+#macroValue {
+	font-size:10px;
+	margin-left:-3px;
+}
+
+.sbitxv3-btn {
+	height: 45px;
+	width: 42px;
+	background-color: #507691;
+	border: solid 1px #507691;
+	font-size: 12px;
+	color: white;
+	vertical-align:top;
+	display: inline-block;
+	line-height: 0;
+	padding: 0;
+	margin:0 -1px;
+	border-radius: 3px;	
+}
+
+.sbitxv3-macro {
+	text-align: left;
+	width: 75px;
+	padding-top: 5px;
+	padding-left: 3px;
+	height: 36px;
+	min-height: 36px;
+	border: solid 1px #888;
+	font-size: 14px;
+	font-weight: bold;
+	vertical-align:top;
+	display: inline-block;
+	padding-bottom: 0;
+	color: black;
+	background-color: white;
+}
+
+#maincontrols {
+	z-index: 1;
+}
+
+#settings-open {
+	position:relative;
+}
+
+#settings-open:after {
+	content: '\2197';
+	top: 0;
+	right: 0;
+}
+	
+
+.sbitxv3-control2 {
+	text-align: left;
+	width: 45px;
+	padding-top: 5px;
+	padding-left: 3px;
+	height: 36px;
+	min-height: 36px;
+	border: solid 1px #888;
+	font-size: 12px;
+	vertical-align:top;
+	display: inline-block;
+	position: relative;
+	display: inline-block;
+}
+
+.sbitxv3-value {
+	color: white;
+}
+
+/* linear pot  styling */
+
+.linear{
+	text-align: center;
+	min-width: 40px;
+	padding: 3px 0;
+	height: 44px;
+	min-height: 44px;
+	font-size: 12px;
+	vertical-align:top;
+	display: inline-block;
+	position: relative;
+	display: inline-block;
+	background-color:#0033cc;
+	border-radius: 3px;	
+}
+
+.linear-value {
+	width: 35px;
+	border: 0;
+	text-align:center;
+	color:white;
+	padding-top:20px;
+	position:absolute;
+	left:3px;
+	top:0;
+	height:40px;
+	
+}
+
+.linear-value:focus {
+	outline:none;
+}
+
+.linear-dropdown{
+	display: none;
+	position: absolute;
+	width: 42px;
+	height: 110px;
+	z-index: 1;
+	opacity: 1;
+	background-color:#fffe00;
+	left:0px;
+	top: 43px;
+}
+
+.linear-slider{
+	appearance: slider-vertical;
+	height: 90px;
+	width: 40px;
+	margin-top:15px;
+}
+
+.macro-btn {
+	height: 45px;
+	min-width: 43px;
+	border-collapse: collapse;
+	border: 1px solid #888;
+	background-color: black;
+	color: white;
+	line-height: 15px;
+}
+
+.macro-btn:first-line {
+	color:cyan !important;
+}
+
+.sbitx-text-field {
+	margin-top: 1px;
+	height: 28px;
+	border: solid 1px #888;
+}
+.longer-control {
+	width: 100px;
+}
+
+.longer-control .sbitxv3-selection{
+	width: 80px;
+}
+
+.rx-control {
+	background-color: #0033cc;
+}
+
+.rx-control input, #FT8_controls input, #Voice_ui input, #cw_settings input, #linear_MIC input {
+	background-color: unset;
+}
+
+.rx-control select {
+	background-color: #0033cc;
+}
+
+/* individual controls, only styled */
+
+#logbook-open {
+	width: 45px;
+}
+#linear_DRIVE, #linear_DRIVE > .linear-value{
+	background-color: unset;
+}
+
+
+/* specific controls */
+#TEXT {
+	width: 100%;
+	display: inline-block;
+}
+
+#CW_INPUT {
+	background-color: black;
+	border: solid 1px #333;
+}
+
+#more_keys{
+	text-align: left;
+}
+
+#more_keys button {
+	line-height: 12px;
+	padding: 0 2px;
+	width: 42px;
+	margin: 0;
+	border:0;
+}
+
+#dial-dropdown {
+	width: 200px;
+	height: 200px;
+	/* display: none; */
+	position: absolute;
+	z-index: 1;
+	background-color: black;
+}
+
+#console {
+	color: black;
+}
+
+/* style the  keyboard */
+
+#keybd {
+	z-index: 1;
+	opacity: 1;
+	background-color: black;
+}
+
+#keybd  td {
+	width: 6%;
+	margin: 2px;
+	padding: 2px;
+	height: 36px;
+	text-align: center;
+	border-collapse: collapse;
+	border: solid 1px white;
+	background-color: black;
+	color:cyan !important;
+	opacity: 1.0;
+	font-size: 15pt;
+}
+
+#keybd-container{ 
+ 	opacity: 1;
+	text-align: center;
+}
+
+/* login pane */
+
+#login_error {
+	background-color: yellow;
+	color: black;
+}
+
+/* https://coderwall.com/p/5m0srg/beware-of-inline-block */
+#main {
+	padding: 5px 0;
+	z-index : -1;
+}
+
+.borderedBox {
+	border: 1px solid white;
+}
+
+.marginTop30 {
+	margin-top:30px
+}
+
+.marginLeft5 {margin-left:5px;}
+
+.btn50Wide { width:50px }
+.btn55Wide { width:55px }
+.btn60Wide { width:60px }
+.btn70Wide { width:70px }
+.btn72Wide { width:72px }
+
+
+.activityBox {
+	width:100%
+}
+
+.activityBox .sbitxv3-label, .activityBox .sbitx-list-container {
+	padding:0 0 5px 5px;
+}
+
+/*  LED Lights  */
+.btnLED {
+	width:18px;
+	height:18px;
+	position:absolute;
+	top:23px;
+	left:11px;
+	display:block;
+}
+.ledOff {
+	background-image:url('/img/LEDGreenOff.png');
+}
+
+.ledOn {
+	background-image:url('/img/LEDGreenOn.png');
+}
+
+
+
+/* Let's hide the annoying numeric input scroll arrows and dropdown arrows.
+	/* Chrome, Safari, Edge, Opera */
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+	/* Firefox */
+	input[type=number] {
+		-moz-appearance: textfield;
+	}
+
+.clearIt { clear:both;}
+
+.floaters {position:relative;float:left;}
+
+#loggerInputs, #FT8_controls {
+	position:relative;
+	display:inline-block;
+	float:left;
+}
+
+#qrz {
+	width: auto;
+	height: 42px;
+	margin-top: 2px;
+	line-height: 14px;
+	text-align: center;
+	padding: 5px 5px;
+}
+
+#TEXT {
+	width:153px;
+	height:44px;
+	position:relative;
+	float:left;
+}
+
+#CALL {width:72px;}
+
+#esc {
+	height:44px;
+	width:48px !important;
+}
+	
+.pad0 {padding:0;}
+
+#record_duration {
+	color:white;
+	position:relative;
+	float:left;
+	height:40px;
+	padding:10px 6px;
+}
+
+.iconBtn {font-size:24px;}
+
+.height10 {height:10px}
+.marginTop5 {margin-top:5px !important;}
+.marginTop40 {margin-top:40px!important;}
+
+.fineprint {font-size:11px;}
+
+.btnWhiteVal {
+	font-weight:normal;
+	color:white;
+}
+
+#tools-btn {
+	position:absolute;
+	top:0;
+	left:5px;
+}
+
+#cwInputValue {
+	margin-left: -3px;
+	font-size: 9px;
+	position:relative;
+	top:2px;
+}
+
+.wideButtons .btn {width:130px !important;}
+.wideButtons span span {font-weight:normal;}
+.whtText {color:#FFF;}
+
+.wsjtx-message-for-me {
+	color:#F00;
+}
+
+.wsjtx-mycallsign {
+	color:orange;
+}
+
+.wsjtx-cq-in-message {
+	color:Yellow;
+}
+
+.wsjtx-message-queued {
+	color:#00F;
+}
+
+#telnet_panel, #console_panel {
+	border: 1px solid white;
+	padding:10px;
+}
+
+.highlightedItem span {color:#AAA !important}
