@@ -387,16 +387,16 @@
 						</div>
 						<div id="more_keys">								
 							<button class="logBtns btnColorGrey" id="esc">ESC</button>
-							<button class="buttonType1 btnColorWht" id="F1">F1</button>
-							<button class="buttonType1 btnColorWht" id="F2">F2</button>
-							<button class="buttonType1 btnColorWht" id="F3">F3</button>
-							<button class="buttonType1 btnColorWht" id="F4">F4</button>
-							<button class="buttonType1 btnColorWht" id="F5">F5</button>
-							<button class="buttonType1 btnColorWht" id="F6">F6</button>
-							<button class="buttonType1 btnColorWht" id="F7">F7</button>
-							<button class="buttonType1 btnColorWht" id="F8">F8</button>
-							<button class="buttonType1 btnColorWht" id="F9">F9</button>
-							<button class="buttonType1 btnColorWht" id="F10">F10</button>
+							<button class="buttonType1 btnColorWht functionKeys" id="F1">F1</button>
+							<button class="buttonType1 btnColorWht functionKeys" id="F2">F2</button>
+							<button class="buttonType1 btnColorWht functionKeys" id="F3">F3</button>
+							<button class="buttonType1 btnColorWht functionKeys" id="F4">F4</button>
+							<button class="buttonType1 btnColorWht functionKeys" id="F5">F5</button>
+							<button class="buttonType1 btnColorWht functionKeys" id="F6">F6</button>
+							<button class="buttonType1 btnColorWht functionKeys" id="F7">F7</button>
+							<button class="buttonType1 btnColorWht functionKeys" id="F8">F8</button>
+							<button class="buttonType1 btnColorWht functionKeys" id="F9">F9</button>
+							<button class="buttonType1 btnColorWht functionKeys" id="F10">F10</button>
 						</div>
 					</div>
 <!-- Middle of page: Text\CMD, macro set, Function keys. ends here -->
@@ -2647,6 +2647,7 @@ window.addEventListener("resize", resize_ui);
 window.addEventListener("click", on_click);
 $(".sbitx-btn").on("click", sbitx_button_clicked);
 $(".sbitxv3-btn").on("click", sbitx_button_clicked);
+$(".functionKeys").on("click", sbitx_button_clicked);
 $(".bandBtns").on("click", sbitx_button_clicked);
 //$(".sbitxv3-control").on("click", sbitxv3_control_clicked);
 $(".sbitx-selection").on("change", sbitx_selection_changed);	
